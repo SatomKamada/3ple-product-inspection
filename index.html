@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>商品横断検索 | 管理画面モック</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- ===== ヘッダー（ace-mock準拠） ===== -->
+<header class="app-header">
+  <a class="app-logo" href="#">ACE</a>
+  <a class="app-shop" href="#">サンプル百貨店<i class="bi bi-chevron-right"></i></a>
+  <div class="ms-auto d-flex align-items-center gap-4">
+    <span class="mock-pill">MOCK</span>
+    <div class="dropdown">
+      <button class="app-user dropdown-toggle-none" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi bi-person-circle"></i>管理者様<i class="bi bi-chevron-down"></i>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><a class="dropdown-item" href="#">ログアウト</a></li>
+      </ul>
+    </div>
+  </div>
+</header>
+
+<div class="app-body">
+  <!-- ===== サイドメニュー ===== -->
+  <nav class="app-sidebar" aria-label="メニュー">
+    <ul class="side-menu">
+      <li><a href="#"><i class="bi bi-diagram-3-fill"></i>AALMホーム</a></li>
+      <li><a href="#"><i class="bi bi-house-door-fill"></i>LMSホーム</a></li>
+      <li>
+        <a href="#menu-stock" data-bs-toggle="collapse" aria-expanded="false"><i class="bi bi-boxes"></i>在庫管理<i class="bi bi-chevron-down caret"></i></a>
+        <ul class="collapse side-sub" id="menu-stock">
+          <li><a href="#">入庫管理</a></li>
+          <li><a href="#">在庫一覧</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="#menu-product" data-bs-toggle="collapse" aria-expanded="true"><i class="bi bi-box-seam-fill"></i>商品管理<i class="bi bi-chevron-down caret"></i></a>
+        <ul class="collapse show side-sub" id="menu-product">
+          <li><a href="#">商品一覧</a></li>
+          <li><a href="#">商品規格一覧</a></li>
+          <li><a href="#" class="current" aria-current="page">商品横断検索</a></li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- ===== メイン ===== -->
+  <main class="app-main">
+    <div class="page-title">
+      <h1>商品横断検索</h1>
+      <span class="sub">管理</span>
+    </div>
+
+    <div class="page-content">
+    <!-- ===== 検索窓 ===== -->
+    <form id="searchForm" autocomplete="off">
+      <div class="card search-card">
+        <div class="card-header" data-bs-toggle="collapse" data-bs-target="#searchBody" role="button" aria-expanded="true">
+          <i class="bi bi-search me-2"></i>基本検索
+          <i class="bi bi-chevron-up ms-auto toggle-ico"></i>
+        </div>
+        <div id="searchBody" class="collapse show">
+          <div class="card-body">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label" for="s-name">商品名<span class="help" data-bs-toggle="tooltip" title="部分一致で検索します">?</span></label>
+                <input type="text" class="form-control" id="s-name">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="s-code">商品コード<span class="help" data-bs-toggle="tooltip" title="カンマ区切りで複数指定できます（部分一致）">?</span></label>
+                <input type="text" class="form-control" id="s-code" placeholder="10000001, 10000002">
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label" for="s-jan">JANコード<span class="help" data-bs-toggle="tooltip" title="カンマ区切りで複数指定できます（部分一致）">?</span></label>
+                <input type="text" class="form-control" id="s-jan" placeholder="4944929005288, 100000000064">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="s-variant-code">商品規格コード<span class="help" data-bs-toggle="tooltip" title="カンマ区切りで複数指定できます（部分一致）">?</span></label>
+                <input type="text" class="form-control" id="s-variant-code" placeholder="100000000012, 110100000001">
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label" for="s-history">掲載履歴コード<span class="help" data-bs-toggle="tooltip" title="カンマ区切りで複数指定できます（部分一致）">?</span></label>
+                <input type="text" class="form-control" id="s-history" placeholder="PH0000001, PH0000002">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="s-business">業態区分</label>
+                <select class="form-select" id="s-business" data-master="businessTypes"></select>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label" for="s-chopple">ちょっぷル種別</label>
+                <select class="form-select" id="s-chopple" data-master="choppleTypes"></select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="s-spec">規格区分</label>
+                <select class="form-select" id="s-spec" data-master="specTypes"></select>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label" for="s-saleform">販売形態</label>
+                <select class="form-select" id="s-saleform" data-master="saleForms"></select>
+              </div>
+              <div class="col-md-6">
+                <span class="form-label d-block">在庫</span>
+                <div class="pt-1">
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="s-stock" id="stock-all" value="" checked>
+                    <label class="form-check-label" for="stock-all">指定なし</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="s-stock" id="stock-yes" value="あり">
+                    <label class="form-check-label" for="stock-yes">あり</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="s-stock" id="stock-no" value="なし">
+                    <label class="form-check-label" for="stock-no">なし</label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label" for="s-pstatus">公開状態（商品）</label>
+                <select class="form-select" id="s-pstatus" data-master="productStatuses"></select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="s-honten">本店公開状態</label>
+                <select class="form-select" id="s-honten" data-master="hontenStatuses"></select>
+              </div>
+
+              <div class="col-md-6">
+                <span class="form-label d-block">更新日時（商品）</span>
+                <div class="range">
+                  <input type="datetime-local" class="form-control" id="s-pupd-from" aria-label="更新日時（商品）開始">
+                  <span>～</span>
+                  <input type="datetime-local" class="form-control" id="s-pupd-to" aria-label="更新日時（商品）終了">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <span class="form-label d-block">更新日時（商品規格）</span>
+                <div class="range">
+                  <input type="datetime-local" class="form-control" id="s-vupd-from" aria-label="更新日時（商品規格）開始">
+                  <span>～</span>
+                  <input type="datetime-local" class="form-control" id="s-vupd-to" aria-label="更新日時（商品規格）終了">
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <span class="form-label d-block">掲載日時</span>
+                <div class="range">
+                  <input type="datetime-local" class="form-control" id="s-post-from" aria-label="掲載日時 開始">
+                  <span>～</span>
+                  <input type="datetime-local" class="form-control" id="s-post-to" aria-label="掲載日時 終了">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="search-actions">
+        <button type="button" class="btn btn-outline-secondary" id="btnClear">条件をクリア</button>
+        <button type="submit" class="btn btn-primary btn-search"><i class="bi bi-search me-1"></i>検索</button>
+      </div>
+    </form>
+
+    <!-- ===== 検索結果 ===== -->
+    <section class="card result-card" id="results">
+      <div class="card-body">
+        <div class="result-head">
+          <div>
+            <div class="result-summary" id="resultSummary"></div>
+            <div class="cond-list" id="condList"></div>
+          </div>
+          <div class="result-tools">
+            <div class="form-check form-switch m-0">
+              <input class="form-check-input" type="checkbox" id="matchOnly">
+              <label class="form-check-label" for="matchOnly">条件に一致した属性・規格のみ表示</label>
+            </div>
+            <label class="d-flex align-items-center gap-2 m-0">
+              表示件数
+              <select class="form-select form-select-sm w-auto" id="perPage">
+                <option>10</option><option selected>20</option><option>50</option>
+              </select>
+            </label>
+          </div>
+        </div>
+
+        <div class="focus-bar" id="focusBar" hidden></div>
+
+        <ul class="nav nav-tabs result-tabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active tab-btn-products" data-bs-toggle="tab" data-bs-target="#pane-products" data-tab="products" type="button" role="tab">
+              <i class="bi bi-box"></i>商品<span class="tab-count" id="count-products">0</span>
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link tab-btn-attributes" data-bs-toggle="tab" data-bs-target="#pane-attributes" data-tab="attributes" type="button" role="tab">
+              <i class="bi bi-tags"></i>商品属性情報<span class="tab-count" id="count-attributes">0</span>
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link tab-btn-variants" data-bs-toggle="tab" data-bs-target="#pane-variants" data-tab="variants" type="button" role="tab">
+              <i class="bi bi-grid-3x3-gap"></i>商品規格<span class="tab-count" id="count-variants">0</span>
+            </button>
+          </li>
+        </ul>
+
+        <div class="tab-content">
+          <div class="tab-pane fade show active tab-products" id="pane-products" role="tabpanel" data-tab="products"></div>
+          <div class="tab-pane fade tab-attributes" id="pane-attributes" role="tabpanel" data-tab="attributes"></div>
+          <div class="tab-pane fade tab-variants" id="pane-variants" role="tabpanel" data-tab="variants"></div>
+        </div>
+      </div>
+    </section>
+    </div><!-- /.page-content -->
+  </main>
+</div>
+
+<!-- トースト -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+  <div id="toast" class="toast align-items-center text-bg-dark border-0" role="status" aria-live="polite">
+    <div class="d-flex">
+      <div class="toast-body" id="toastBody"></div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="閉じる"></button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
