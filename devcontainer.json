@@ -1,0 +1,9 @@
+{
+  "name": "product-cross-search-mock",
+  "image": "mcr.microsoft.com/devcontainers/python:3.12",
+  "forwardPorts": [8000],
+  "portsAttributes": {
+    "8000": { "label": "モック画面", "onAutoForward": "openBrowser" }
+  },
+  "postAttachCommand": "python3 -m http.server 8000"
+}
