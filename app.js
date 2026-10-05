@@ -1,15 +1,17 @@
 (function () {
   'use strict';
-  const { MASTER, products, histories, variants } = window.MOCK_DATA;
-  const TAB_LABEL = { products: '商品', histories: '掲載履歴', variants: '商品規格' };
+  const { MASTER, products, attributes, histories, variants } = window.MOCK_DATA;
+  const TABS = ['products', 'attributes', 'variants', 'histories'];
+  const TAB_LABEL = { products: '商品', attributes: '商品属性情報', variants: '商品規格', histories: '掲載履歴' };
+  const resetPages = () => ({ products: 1, attributes: 1, variants: 1, histories: 1 });
   const state = {
-    cond: {}, hasCond: { histories: false, variants: false },
-    results: { products: [], histories: [], variants: [] },
-    linkCount: { histories: new Map(), variants: new Map() },
+    cond: {}, hasCond: { attributes: false, histories: false, variants: false },
+    results: { products: [], attributes: [], histories: [], variants: [] },
+    linkCount: { attributes: new Map(), histories: new Map(), variants: new Map() },
     focusProductId: null, focusVariantId: null,
-    matchOnly: false, perPage: 20, page: { products: 1, histories: 1, variants: 1 },
-    sort: { products: { key: 'code', dir: 'asc' }, histories: { key: 'historyCode', dir: 'asc' }, variants: { key: 'code', dir: 'asc' } },
-    checked: { products: new Set(), histories: new Set(), variants: new Set() }
+    matchOnly: false, perPage: 20, page: resetPages(),
+    sort: { products: { key: 'code', dir: 'asc' }, attributes: { key: 'code', dir: 'asc' }, histories: { key: 'historyCode', dir: 'asc' }, variants: { key: 'code', dir: 'asc' } },
+    checked: { products: new Set(), attributes: new Set(), histories: new Set(), variants: new Set() }
   };
 
   const $ = (sel, root = document) => root.querySelector(sel);
@@ -85,7 +87,7 @@
     const c = state.cond;
     const useHist = hasScopeCond(c, 'histories');
     const useVar = hasScopeCond(c, 'variants');
-    state.hasCond = { histories: useHist, variants: useVar };
+    state.hasCond = { attributes: false, histories: useHist, variants: useVar };
 
     const hitProducts = products.filter((p) => {
       if (!matchProduct(p, c)) return false;
@@ -96,8 +98,13 @@
     const ids = new Set(hitProducts.map((p) => p.id));
 
     state.results.products = hitProducts;
+    state.results.attributes = attributes.filter((a) => ids.has(a.productId));
     state.results.histories = histories.filter((h) => ids.has(h.productId)).map((h) => ({ ...h, _hit: useHist && matchHistory(h, c) }));
     state.results.variants = variants.filter((v) => ids.has(v.productId)).map((v) => ({ ...v, _hit: useVar && matchVariant(v, c) }));
+
+    const am = new Map();
+    state.results.attributes.forEach((a) => am.set(a.productId, (am.get(a.productId) || 0) + 1));
+    state.linkCount.attributes = am;
 
     const vm = new Map();
     state.results.variants.forEach(r => { if (!(state.matchOnly && state.hasCond.variants && !r._hit)) vm.set(r.productId, (vm.get(r.productId) || 0) + 1); });
@@ -120,6 +127,12 @@
       keys.map(k => `<div><span class="price-label">${esc(k)}</span><br>${yen(prices[k])}</div>`).join('') + '</div>';
   };
 
+  const flag = (on) => (on ? '<span class="flag-on">◯</span>' : '<span class="flag-off">－</span>');
+  const textOrDash = (t) => (t ? esc(t) : '<span class="empty-val">－</span>');
+  const nutritionCell = (n) => (n
+    ? `<div class="nutri">エネルギー ${n.energy}kcal<br>たんぱく質 ${n.protein}g<br>脂質 ${n.fat}g<br>炭水化物 ${n.carbs}g<br>食塩相当量 ${n.salt}g</div>`
+    : '<span class="flag-off">－</span>');
+
   const COLUMNS = {
     products: [
       { key: 'code', label: '商品コード', sort: true, cls: 'nowrap', render: (p) => (p.isSet ? '<span class="badge-set">セット品</span><br>' : '') + esc(p.code) },
@@ -133,10 +146,22 @@
       { key: 'createdAt', label: '登録日時', sort: true, cls: 'nowrap', render: (p) => fmtDate(p.createdAt) },
       { key: 'updatedAt', label: '更新日時', sort: true, cls: 'nowrap', render: (p) => fmtDate(p.updatedAt) },
       { key: '_links', label: '紐づき', render: (p) => {
+          const a = state.linkCount.attributes.get(p.id) || 0;
           const v = state.linkCount.variants.get(p.id) || 0;
-          return `<div class="link-btns"><button type="button" class="btn btn-outline-secondary js-goto" data-pid="${p.id}" data-goto="variants">商品規格 ${v}件</button></div>`;
+          return `<div class="link-btns"><button type="button" class="btn btn-outline-secondary js-goto" data-pid="${p.id}" data-goto="attributes">商品属性 ${a}件</button><button type="button" class="btn btn-outline-secondary js-goto" data-pid="${p.id}" data-goto="variants">商品規格 ${v}件</button></div>`;
         } },
       { key: '_actions', label: '', render: (p) => `<div class="actions"><button type="button" class="btn btn-primary btn-receive js-mock">入庫登録</button>${eyeBtn('商品')}<button type="button" class="icon-btn js-mock"><i class="bi bi-copy"></i></button></div>` },
+    ],
+    attributes: [
+      { key: 'code', label: '商品属性コード', sort: true, cls: 'nowrap' },
+      { key: 'attrNo', label: '属性番号', sort: true },
+      { key: 'isDefault', label: 'デフォルトフラグ', sort: true, render: (a) => flag(a.isDefault) },
+      { key: 'origin', label: '原産国・産地', sort: true, cls: 'nowrap' },
+      { key: 'ingredients', label: '原材料・成分', cls: 'col-text', render: (a) => textOrDash(a.ingredients) },
+      { key: 'nutrition', label: '栄養成分情報', render: (a) => nutritionCell(a.nutrition) },
+      { key: 'allergens', label: 'アレルゲン情報', cls: 'col-text', render: (a) => textOrDash(a.allergens) },
+      { key: 'contamination', label: 'コンタミネーション情報', cls: 'col-text', render: (a) => textOrDash(a.contamination) },
+      { key: 'isLabelless', label: 'ラベルレスフラグ', sort: true, render: (a) => flag(a.isLabelless) },
     ],
     histories: [
       { key: 'historyCode', label: '掲載履歴コード', sort: true, cls: 'nowrap', render: (a) => esc(a.historyCode) + hitBadge(a) },
@@ -235,7 +260,7 @@
 
   function renderSummary() {
     const r = state.results;
-    $('#resultSummary').innerHTML = `検索結果：商品<span class="num">${r.products.length}</span>件 ／ 掲載履歴<span class="num">${r.histories.length}</span>件 ／ 商品規格<span class="num">${r.variants.length}</span>件`;
+    $('#resultSummary').innerHTML = `検索結果：商品<span class="num">${r.products.length}</span>件 ／ 商品属性情報<span class="num">${r.attributes.length}</span>件 ／ 商品規格<span class="num">${r.variants.length}</span>件 ／ 掲載履歴<span class="num">${r.histories.length}</span>件`;
     const chips = COND_DEFS.filter((d) => state.cond[d.key]).map((d) => {
       let v = state.cond[d.key];
       if (/From|To$/.test(d.key)) v = v.replace('T', ' ').replace(/-/g, '/');
@@ -257,20 +282,20 @@
     }
   }
 
-  function renderAll() { renderSummary(); ['products', 'histories', 'variants'].forEach(renderTab); }
+  function renderAll() { renderSummary(); TABS.forEach(renderTab); }
 
   function doSearch() {
     state.cond = readConditions();
     state.focusProductId = null; state.focusVariantId = null;
-    state.page = { products: 1, histories: 1, variants: 1 };
+    state.page = resetPages();
     Object.values(state.checked).forEach((s) => s.clear());
     document.getElementById('tab-item-histories').classList.add('d-none');
     bootstrap.Tab.getOrCreateInstance($(`[data-tab="products"].nav-link`)).show();
     runSearch(); renderAll();
   }
 
-  function setFocus(pid) { state.focusProductId = pid; state.focusVariantId = null; state.page = { products: 1, histories: 1, variants: 1 }; renderAll(); }
-  function setFocusVariant(vid) { state.focusVariantId = vid; state.focusProductId = null; state.page = { products: 1, histories: 1, variants: 1 }; renderAll(); }
+  function setFocus(pid) { state.focusProductId = pid; state.focusVariantId = null; state.page = resetPages(); renderAll(); }
+  function setFocusVariant(vid) { state.focusVariantId = vid; state.focusProductId = null; state.page = resetPages(); renderAll(); }
 
   function showTab(tab) {
     if (tab === 'histories') document.getElementById('tab-item-histories').classList.remove('d-none');
@@ -282,7 +307,7 @@
   function bindEvents() {
     $('#searchForm').addEventListener('submit', (e) => { e.preventDefault(); doSearch(); $('#results').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
     $('#btnClear').addEventListener('click', () => { $('#searchForm').reset(); doSearch(); });
-    $('#perPage').addEventListener('change', (e) => { state.perPage = Number(e.target.value); state.page = { products: 1, histories: 1, variants: 1 }; renderAll(); });
+    $('#perPage').addEventListener('change', (e) => { state.perPage = Number(e.target.value); state.page = resetPages(); renderAll(); });
     $('#matchOnly').addEventListener('change', (e) => { state.matchOnly = e.target.checked; runSearch(); renderAll(); });
 
     $('#results').addEventListener('click', (e) => {

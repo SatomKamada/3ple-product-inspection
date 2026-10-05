@@ -192,9 +192,9 @@
               <i class="bi bi-box"></i>商品<span class="tab-count" id="count-products">0</span>
             </button>
           </li>
-          <li class="nav-item d-none" id="tab-item-histories" role="presentation">
-            <button class="nav-link tab-btn-attributes" data-bs-toggle="tab" data-bs-target="#pane-histories" data-tab="histories" type="button" role="tab">
-              <i class="bi bi-clock-history"></i>掲載履歴<span class="tab-count" id="count-histories">0</span>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link tab-btn-attributes" data-bs-toggle="tab" data-bs-target="#pane-attributes" data-tab="attributes" type="button" role="tab">
+              <i class="bi bi-tags"></i>商品属性情報<span class="tab-count" id="count-attributes">0</span>
             </button>
           </li>
           <li class="nav-item" role="presentation">
@@ -202,12 +202,18 @@
               <i class="bi bi-grid-3x3-gap"></i>商品規格<span class="tab-count" id="count-variants">0</span>
             </button>
           </li>
+          <li class="nav-item d-none" id="tab-item-histories" role="presentation">
+            <button class="nav-link tab-btn-histories" data-bs-toggle="tab" data-bs-target="#pane-histories" data-tab="histories" type="button" role="tab">
+              <i class="bi bi-clock-history"></i>掲載履歴<span class="tab-count" id="count-histories">0</span>
+            </button>
+          </li>
         </ul>
 
         <div class="tab-content">
           <div class="tab-pane fade show active tab-products" id="pane-products" role="tabpanel" data-tab="products"></div>
-          <div class="tab-pane fade tab-attributes" id="pane-histories" role="tabpanel" data-tab="histories"></div>
+          <div class="tab-pane fade tab-attributes" id="pane-attributes" role="tabpanel" data-tab="attributes"></div>
           <div class="tab-pane fade tab-variants" id="pane-variants" role="tabpanel" data-tab="variants"></div>
+          <div class="tab-pane fade tab-histories" id="pane-histories" role="tabpanel" data-tab="histories"></div>
         </div>
       </div>
     </section>

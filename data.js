@@ -33,8 +33,8 @@
 
   const NAMES = [
     { name: '井村屋つぶ入りおしるこ' },
-    { name: 'スポミンもこもこファイバー　アイボリー', set: true },
-    { name: 'スポミンやわらかスポンジ　イエロー', set: true },
+    { name: 'スポミンもこもこファイバー　アイボリー', set: true, nf: true },
+    { name: 'スポミンやわらかスポンジ　イエロー', set: true, nf: true },
     { name: 'ショコラスティックBIGパック' },
     { name: '白きくらげの杏仁風デザート' },
     { name: 'ウコンの力２本＋顆粒Ｒ' },
@@ -55,8 +55,8 @@
     { name: '手延べそうめん' },
     { name: '減塩しょうゆ 1L' },
     { name: '冷凍たこ焼き 20個' },
-    { name: 'キッチンペーパー 4ロール', set: true },
-    { name: '食器用洗剤 詰替' },
+    { name: 'キッチンペーパー 4ロール', set: true, nf: true },
+    { name: '食器用洗剤 詰替', nf: true },
     { name: 'ほうじ茶ラテ スティック' },
     { name: '博多明太子 切子' },
     { name: '信州みそ 750g' },
@@ -74,7 +74,7 @@
     const updatedAt = rnd() < 0.3 ? createdAt : randDate(createdAt, T_END);
     const r = rnd();
     return {
-      id, code: String(10000000 + id), name: n.name, isSet: !!n.set,
+      id, code: String(10000000 + id), name: n.name, isSet: !!n.set, nonFood: !!n.nf,
       jan: rnd() < 0.4 ? String(100000000000 + randInt(1, 999)) : '49' + digits(11),
       maker: rnd() < 0.35 ? pick(MAKERS) : '',
       caseQty: pick([0, 1, 6, 12, 15, 24, 30]), ballQty: pick([0, 0, 2, 4, 6]),
@@ -129,5 +129,46 @@
     }
   });
 
-  window.MOCK_DATA = { MASTER, products, histories, variants };
+  // 商品属性情報（既存データの乱数系列を変えないよう別シードで生成）
+  const rndA = mulberry32(20261005);
+  const pickA = (arr) => arr[Math.floor(rndA() * arr.length)];
+  const intA = (min, max) => min + Math.floor(rndA() * (max - min + 1));
+  const ORIGINS = ['日本（北海道）', '日本（青森県）', '日本（長野県）', '日本（静岡県）', '日本（香川県）', '日本（福岡県）', '日本', 'アメリカ', 'オーストラリア', '中国', 'タイ', 'イタリア'];
+  const ORIGINS_NF = ['日本', '中国', 'ベトナム', 'タイ'];
+  const INGREDIENTS = ['砂糖', '小豆', '小麦粉', '植物油脂', '食塩', '乳製品', '卵', 'でん粉', 'ぶどう糖果糖液糖', '香料', '酸味料', '寒天', 'カカオマス', 'りんご', '緑茶', '大豆', '米', 'かつお節エキス'];
+  const INGREDIENTS_NF = ['パルプ', 'ポリウレタン', 'ポリエステル', '界面活性剤（アルキルエーテル硫酸エステルナトリウム）', '安定化剤', '香料'];
+  const ALLERGENS = ['卵', '乳', '小麦', 'えび', 'かに', 'そば', '落花生', 'くるみ', '大豆', 'ごま', 'りんご'];
+  const sampleA = (arr, min, max) => {
+    const pool = arr.slice(); const out = []; const n = intA(min, Math.min(max, pool.length));
+    for (let i = 0; i < n; i++) out.push(pool.splice(Math.floor(rndA() * pool.length), 1)[0]);
+    return out;
+  };
+
+  const attributes = [];
+  let attrSeq = 1;
+  products.forEach((p) => {
+    const n = intA(1, 3);
+    for (let k = 0; k < n; k++) {
+      const nf = p.nonFood;
+      const allergens = nf ? [] : (rndA() < 0.3 ? [] : sampleA(ALLERGENS, 1, 4));
+      attributes.push({
+        id: attrSeq, productId: p.id, productCode: p.code, productName: p.name,
+        code: 'PA' + String(attrSeq).padStart(7, '0'),
+        attrNo: k + 1,
+        isDefault: k === 0,
+        origin: nf ? pickA(ORIGINS_NF) : pickA(ORIGINS),
+        ingredients: (nf ? sampleA(INGREDIENTS_NF, 1, 3) : sampleA(INGREDIENTS, 2, 6)).join('、'),
+        nutrition: nf ? null : {
+          energy: intA(5, 600), protein: intA(0, 200) / 10, fat: intA(0, 300) / 10,
+          carbs: intA(0, 800) / 10, salt: intA(0, 50) / 10,
+        },
+        allergens: allergens.join('、'),
+        contamination: nf || rndA() < 0.5 ? '' : '本品製造工場では' + sampleA(ALLERGENS, 1, 3).join('・') + 'を含む製品を生産しています。',
+        isLabelless: rndA() < 0.2,
+      });
+      attrSeq++;
+    }
+  });
+
+  window.MOCK_DATA = { MASTER, products, attributes, histories, variants };
 })();
