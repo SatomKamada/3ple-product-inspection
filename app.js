@@ -203,6 +203,7 @@
 
   function renderTab(tab) {
     const pane = $(`#pane-${tab}`);
+    if (!pane) return;
     const cols = COLUMNS[tab];
     const rows = visibleRows(tab);
     const total = rows.length;
@@ -328,12 +329,18 @@
     });
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
+  function initApp() {
     $$('select[data-master]').forEach((sel) => {
       const opts = MASTER[sel.dataset.master] || [];
       sel.innerHTML = '<option value="">選択</option>' + opts.map((o) => `<option value="${esc(o)}">${esc(o)}</option>`).join('');
     });
     $$('[data-bs-toggle="tooltip"]').forEach((el) => new bootstrap.Tooltip(el));
     bindEvents(); doSearch();
-  });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initApp);
+  } else {
+    initApp();
+  }
 })();
