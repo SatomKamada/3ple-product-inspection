@@ -116,8 +116,8 @@
 
   const priceGrid = (prices) => {
     const keys = ['本店', 'd店', 'd払い店', 'Yahoo店', '外部1', '外部2', '外部3'];
-    return '<div style="display:grid; grid-template-columns: repeat(4, 1fr); gap: 4px; font-size: 11px; white-space:nowrap;">' +
-      keys.map(k => `<div><span style="color:#666;">${k}</span><br>${yen(prices[k])}</div>`).join('') + '</div>';
+    return '<div class="price-grid">' +
+      keys.map(k => `<div><span class="price-label">${esc(k)}</span><br>${yen(prices[k])}</div>`).join('') + '</div>';
   };
 
   const COLUMNS = {
@@ -161,7 +161,7 @@
       { key: 'publish', label: '公開状態', render: (v) => pubGrid(v.publish) },
       { key: '_links', label: '紐づき', render: (v) => {
           const h = state.linkCount.histories.get(v.id) || 0;
-          return `<button type="button" class="btn btn-outline-primary js-goto" data-vid="${v.id}" data-goto="histories">掲載履歴 ${h}件</button>`;
+          return `<div class="link-btns"><button type="button" class="btn btn-outline-primary js-goto" data-vid="${v.id}" data-goto="histories">掲載履歴 ${h}件</button></div>`;
         } },
     ],
   };
@@ -229,7 +229,7 @@
         '</tr>').join('') : `<tr><td colspan="${cols.length + 1}" class="empty">条件に一致する${TAB_LABEL[tab]}はありません。</td></tr>`;
 
     const info = total ? `全 ${total} 件中 ${start + 1}〜${Math.min(start + state.perPage, total)} 件を表示` + (checked.size ? `（${checked.size} 件選択中）` : '') : '0 件';
-    pane.innerHTML = `<div class="pane-top"><div class="pane-info">${info}</div><nav class="pager">${pagerHtml(tab, pages)}</nav><div class="pane-info" style="visibility:hidden">${info}</div></div><div class="table-wrap"><table class="table-x"><thead>${thead}</thead><tbody>${tbody}</tbody></table></div>`;
+    pane.innerHTML = `<div class="pane-top"><div class="pane-info">${info}</div><nav class="pager">${pagerHtml(tab, pages)}</nav><div class="pane-info pane-info-spacer" aria-hidden="true">${info}</div></div><div class="table-wrap"><table class="table-x"><thead>${thead}</thead><tbody>${tbody}</tbody></table></div>`;
     $(`#count-${tab}`).textContent = total;
   }
 

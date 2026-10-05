@@ -76,6 +76,7 @@ a:hover { text-decoration: underline; }
 .tab-count { background: #e7ebf0; color: #333; border-radius: 10px; font-size: 12px; padding: 0 8px; font-weight: 500; }
 .pane-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding: 14px 0 10px; }
 .pane-info { font-size: 13px; color: var(--muted); }
+.pane-info-spacer { visibility: hidden; }
 .pager { display: flex; justify-content: center; flex: 1; }
 .pager .pagination { margin: 0; }
 .pager .page-link { color: var(--link); font-size: 13px; padding: 5px 11px; }
@@ -90,7 +91,7 @@ a:hover { text-decoration: underline; }
 .tab-attributes thead th { background: var(--hdr-attributes); }
 .tab-variants   thead th { background: var(--hdr-variants); }
 .table-x th.sortable { cursor: pointer; user-select: none; }
-.table-x th .sort-ico { color: #7a8594; font-size: 12px; }
+.table-x th .sort-ico { color: #7a8594; font-size: 12px; margin-left: 2px; }
 .table-x th .sort-ico.active { color: #111; }
 .table-x .nowrap { white-space: nowrap; }
 .table-x .num { text-align: left; }
@@ -109,6 +110,8 @@ tr.row-hit td:first-child { box-shadow: inset 3px 0 0 var(--primary); }
 .pub-grid .off { color: #b5bcc5; font-weight: 400; }
 .link-btns { display: flex; flex-direction: column; gap: 4px; }
 .link-btns .btn { font-size: 12px; padding: 1px 8px; white-space: nowrap; }
+.price-grid { display: grid; grid-template-columns: repeat(4, auto); gap: 4px 12px; font-size: 11px; white-space: nowrap; }
+.price-grid .price-label { color: #666; }
 .actions { display: flex; align-items: center; gap: 10px; }
 .btn-receive { font-size: 12px; padding: 3px 8px; white-space: nowrap; }
 .icon-btn { background: none; border: none; color: #444; font-size: 18px; padding: 0; line-height: 1; }
