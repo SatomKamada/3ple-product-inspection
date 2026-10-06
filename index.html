@@ -67,90 +67,85 @@
         </div>
         <div id="searchBody" class="collapse show">
           <div class="card-body">
-            <div class="row g-3">
-              <div class="col-md-6">
-                <label class="form-label" for="s-name">商品名<span class="help" data-bs-toggle="tooltip" title="部分一致で検索します">?</span></label>
-                <input type="text" class="form-control" id="s-name">
-              </div>
-              <div class="col-md-6">
-                <label class="form-label" for="s-code">商品コード<span class="help" data-bs-toggle="tooltip" title="カンマ区切りで複数指定できます（部分一致）">?</span></label>
-                <input type="text" class="form-control" id="s-code" placeholder="10000001, 10000002">
-              </div>
-              <div class="col-md-6">
-                <label class="form-label" for="s-jan">JANコード<span class="help" data-bs-toggle="tooltip" title="カンマ区切りで複数指定できます（部分一致）">?</span></label>
-                <input type="text" class="form-control" id="s-jan" placeholder="4944929005288, 100000000064">
-              </div>
-              <div class="col-md-6">
-                <label class="form-label" for="s-variant-code">商品規格コード<span class="help" data-bs-toggle="tooltip" title="カンマ区切りで複数指定できます（部分一致）">?</span></label>
-                <input type="text" class="form-control" id="s-variant-code" placeholder="100000000012, 110100000001">
-              </div>
-              <div class="col-md-6">
-                <label class="form-label" for="s-history">掲載履歴コード<span class="help" data-bs-toggle="tooltip" title="カンマ区切りで複数指定できます（部分一致）">?</span></label>
-                <input type="text" class="form-control" id="s-history" placeholder="PH0000001, PH0000002">
-              </div>
-              <div class="col-md-6">
-                <label class="form-label" for="s-business">業態区分</label>
-                <select class="form-select" id="s-business" data-master="businessTypes"></select>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label" for="s-chopple">ちょっぷル種別</label>
-                <select class="form-select" id="s-chopple" data-master="choppleTypes"></select>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label" for="s-spec">規格区分</label>
-                <select class="form-select" id="s-spec" data-master="specTypes"></select>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label" for="s-saleform">販売形態</label>
-                <select class="form-select" id="s-saleform" data-master="saleForms"></select>
-              </div>
-              <div class="col-md-6">
-                <span class="form-label d-block">在庫</span>
-                <div class="pt-1">
-                  <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="s-stock" id="stock-all" value="" checked>
-                    <label class="form-check-label" for="stock-all">指定なし</label>
-                  </div>
-                  <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="s-stock" id="stock-yes" value="あり">
-                    <label class="form-check-label" for="stock-yes">あり</label>
-                  </div>
-                  <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="s-stock" id="stock-no" value="なし">
-                    <label class="form-check-label" for="stock-no">なし</label>
+            <div class="row search-cols">
+              <!-- 左：商品 -->
+              <div class="col-lg-6 search-col">
+                <div class="search-col-title"><i class="bi bi-box"></i>商品</div>
+                <div class="field">
+                  <label class="form-label" for="s-name">商品名<span class="help" data-bs-toggle="tooltip" title="部分一致で検索します">?</span></label>
+                  <input type="text" class="form-control" id="s-name">
+                </div>
+                <div class="field">
+                  <label class="form-label" for="s-jan">JANコード<span class="help" data-bs-toggle="tooltip" title="完全一致で検索します。カンマ区切りで複数指定できます">?</span></label>
+                  <input type="text" class="form-control" id="s-jan" placeholder="4944929005288, 100000000064">
+                </div>
+                <div class="field">
+                  <label class="form-label" for="s-code">商品コード<span class="help" data-bs-toggle="tooltip" title="完全一致で検索します。カンマ区切りで複数指定できます">?</span></label>
+                  <input type="text" class="form-control" id="s-code" placeholder="10000001, 10000002">
+                </div>
+                <div class="field">
+                  <span class="form-label d-block">カテゴリ</span>
+                  <div id="catRows"></div>
+                  <button type="button" class="btn btn-outline-primary btn-add-cat" id="btnAddCat">＋カテゴリ条件を追加</button>
+                </div>
+                <div class="field">
+                  <label class="form-label" for="s-maker">メーカー<span class="help" data-bs-toggle="tooltip" title="部分一致で検索します">?</span></label>
+                  <input type="text" class="form-control" id="s-maker">
+                </div>
+                <div class="field">
+                  <span class="form-label d-block">更新日時</span>
+                  <div class="range">
+                    <input type="datetime-local" class="form-control" id="s-pupd-from" aria-label="更新日時 開始">
+                    <span>～</span>
+                    <input type="datetime-local" class="form-control" id="s-pupd-to" aria-label="更新日時 終了">
                   </div>
                 </div>
               </div>
-              <div class="col-md-6">
-                <label class="form-label" for="s-pstatus">公開状態（商品）</label>
-                <select class="form-select" id="s-pstatus" data-master="productStatuses"></select>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label" for="s-honten">本店公開状態</label>
-                <select class="form-select" id="s-honten" data-master="hontenStatuses"></select>
-              </div>
-              <div class="col-md-6">
-                <span class="form-label d-block">更新日時（商品）</span>
-                <div class="range">
-                  <input type="datetime-local" class="form-control" id="s-pupd-from" aria-label="更新日時（商品）開始">
-                  <span>～</span>
-                  <input type="datetime-local" class="form-control" id="s-pupd-to" aria-label="更新日時（商品）終了">
+
+              <!-- 右：商品規格・掲載履歴 -->
+              <div class="col-lg-6 search-col">
+                <div class="search-col-title"><i class="bi bi-grid-3x3-gap"></i>商品規格・掲載履歴</div>
+                <div class="field">
+                  <label class="form-label" for="s-variant-code">商品規格コード<span class="help" data-bs-toggle="tooltip" title="完全一致で検索します。カンマ区切りで複数指定できます">?</span></label>
+                  <input type="text" class="form-control" id="s-variant-code" placeholder="100000000007, 100000000014">
                 </div>
-              </div>
-              <div class="col-md-6">
-                <span class="form-label d-block">更新日時（商品規格）</span>
-                <div class="range">
-                  <input type="datetime-local" class="form-control" id="s-vupd-from" aria-label="更新日時（商品規格）開始">
-                  <span>～</span>
-                  <input type="datetime-local" class="form-control" id="s-vupd-to" aria-label="更新日時（商品規格）終了">
+                <div class="field">
+                  <label class="form-label" for="s-history">掲載履歴コード<span class="help" data-bs-toggle="tooltip" title="完全一致で検索します。カンマ区切りで複数指定できます">?</span></label>
+                  <input type="text" class="form-control" id="s-history" placeholder="PH0000001, PH0000002">
                 </div>
-              </div>
-              <div class="col-md-6">
-                <span class="form-label d-block">掲載日時</span>
-                <div class="range">
-                  <input type="datetime-local" class="form-control" id="s-post-from" aria-label="掲載日時 開始">
-                  <span>～</span>
-                  <input type="datetime-local" class="form-control" id="s-post-to" aria-label="掲載日時 終了">
+                <div class="row g-3 field">
+                  <div class="col-sm-6">
+                    <label class="form-label" for="s-chopple">ちょっぷル種別</label>
+                    <select class="form-select" id="s-chopple" data-master="choppleTypes"></select>
+                  </div>
+                  <div class="col-sm-6">
+                    <label class="form-label" for="s-saleform">販売形態</label>
+                    <select class="form-select" id="s-saleform" data-master="saleForms"></select>
+                  </div>
+                  <div class="col-sm-6">
+                    <label class="form-label" for="s-honten">本店公開状態</label>
+                    <select class="form-select" id="s-honten" data-master="hontenStatuses"></select>
+                  </div>
+                  <div class="col-sm-6">
+                    <label class="form-label" for="s-spec">規格区分</label>
+                    <select class="form-select" id="s-spec" data-master="specTypes"></select>
+                  </div>
+                </div>
+                <div class="field">
+                  <span class="form-label d-block">掲載期間<span class="help" data-bs-toggle="tooltip" title="指定した期間と掲載期間が重なる掲載履歴を検索します">?</span></span>
+                  <div class="range">
+                    <input type="datetime-local" class="form-control" id="s-post-from" aria-label="掲載期間 開始">
+                    <span>～</span>
+                    <input type="datetime-local" class="form-control" id="s-post-to" aria-label="掲載期間 終了">
+                  </div>
+                </div>
+                <div class="field">
+                  <span class="form-label d-block">販売期間<span class="help" data-bs-toggle="tooltip" title="指定した期間と販売期間が重なる掲載履歴を検索します">?</span></span>
+                  <div class="range">
+                    <input type="datetime-local" class="form-control" id="s-sale-from" aria-label="販売期間 開始">
+                    <span>～</span>
+                    <input type="datetime-local" class="form-control" id="s-sale-to" aria-label="販売期間 終了">
+                  </div>
                 </div>
               </div>
             </div>

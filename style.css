@@ -49,7 +49,16 @@ a:hover { text-decoration: underline; }
 .search-card .card-header[aria-expanded="false"] .toggle-ico { transform: rotate(180deg); }
 .toggle-ico { transition: transform .15s; }
 .search-card .card-body { padding: 24px 24px 28px; }
-.search-card .row { --bs-gutter-x: 3rem; }
+.search-cols { --bs-gutter-x: 3rem; row-gap: 24px; }
+.search-col-title { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; padding-bottom: 8px; margin-bottom: 16px; border-bottom: 2px solid var(--line); }
+.search-col:first-child .search-col-title { border-bottom-color: #6f9bd6; }
+.search-col:last-child .search-col-title { border-bottom-color: #5fb88f; }
+.field { margin-bottom: 18px; }
+.field:last-child { margin-bottom: 0; }
+.row.field { --bs-gutter-x: 1.5rem; --bs-gutter-y: 18px; }
+.cat-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 8px; }
+.cat-row .form-select:disabled { background-color: #f6f7f9; color: #8a8f96; }
+.btn-add-cat { font-size: 12px; padding: 3px 10px; }
 .form-label { font-size: 13px; margin-bottom: 6px; display: inline-flex; align-items: center; }
 .form-control, .form-select { font-size: 14px; border-color: #d5dae0; padding-top: .5rem; padding-bottom: .5rem; }
 .form-control::placeholder { color: #8a8f96; }

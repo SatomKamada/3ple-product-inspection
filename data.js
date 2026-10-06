@@ -32,37 +32,46 @@
   const CLASS2 = ['', '', 'バニラ', '64cm × 64cm', '32mm × 32mm', '6個入', '12個入', '赤', '青'];
 
   const NAMES = [
-    { name: '井村屋つぶ入りおしるこ' },
-    { name: 'スポミンもこもこファイバー　アイボリー', set: true, nf: true },
-    { name: 'スポミンやわらかスポンジ　イエロー', set: true, nf: true },
-    { name: 'ショコラスティックBIGパック' },
-    { name: '白きくらげの杏仁風デザート' },
-    { name: 'ウコンの力２本＋顆粒Ｒ' },
-    { name: '彩のジェラートCUBE' },
-    { name: '【SXテスト】' },
-    { name: '【SX】画面レビュー' },
-    { name: '北海道バターせんべい' },
-    { name: '国産りんごジュース 1L' },
-    { name: '有機緑茶ティーバッグ 50P' },
-    { name: '讃岐うどん 3食入' },
-    { name: '天然水 2L×6本', set: true },
-    { name: '黒糖かりんとう' },
-    { name: '鶏だしの素 顆粒' },
-    { name: '濃厚チーズケーキ' },
-    { name: 'ミックスナッツ 徳用' },
-    { name: '炭酸水 レモン 500ml' },
-    { name: 'ふんわり食パン 6枚切' },
-    { name: '手延べそうめん' },
-    { name: '減塩しょうゆ 1L' },
-    { name: '冷凍たこ焼き 20個' },
-    { name: 'キッチンペーパー 4ロール', set: true, nf: true },
-    { name: '食器用洗剤 詰替', nf: true },
-    { name: 'ほうじ茶ラテ スティック' },
-    { name: '博多明太子 切子' },
-    { name: '信州みそ 750g' },
-    { name: '冷凍枝豆 500g' },
-    { name: 'アイスコーヒー 無糖 1L' },
+    { name: '井村屋つぶ入りおしるこ', cat: '食品/菓子/和菓子' },
+    { name: 'スポミンもこもこファイバー　アイボリー', cat: '日用品/掃除用品/スポンジ', set: true, nf: true },
+    { name: 'スポミンやわらかスポンジ　イエロー', cat: '日用品/掃除用品/スポンジ', set: true, nf: true },
+    { name: 'ショコラスティックBIGパック', cat: '食品/菓子/洋菓子' },
+    { name: '白きくらげの杏仁風デザート', cat: '食品/デザート/チルドデザート' },
+    { name: 'ウコンの力２本＋顆粒Ｒ', cat: '飲料/健康飲料/機能性飲料' },
+    { name: '彩のジェラートCUBE', cat: '食品/デザート/アイス' },
+    { name: '【SXテスト】', cat: '食品/菓子/スナック' },
+    { name: '【SX】画面レビュー', cat: '食品/菓子/スナック' },
+    { name: '北海道バターせんべい', cat: '食品/菓子/和菓子' },
+    { name: '国産りんごジュース 1L', cat: '飲料/清涼飲料/ジュース' },
+    { name: '有機緑茶ティーバッグ 50P', cat: '飲料/茶・コーヒー/緑茶' },
+    { name: '讃岐うどん 3食入', cat: '食品/麺類/うどん' },
+    { name: '天然水 2L×6本', cat: '飲料/清涼飲料/水', set: true },
+    { name: '黒糖かりんとう', cat: '食品/菓子/和菓子' },
+    { name: '鶏だしの素 顆粒', cat: '食品/調味料/だし' },
+    { name: '濃厚チーズケーキ', cat: '食品/菓子/洋菓子' },
+    { name: 'ミックスナッツ 徳用', cat: '食品/菓子/スナック' },
+    { name: '炭酸水 レモン 500ml', cat: '飲料/清涼飲料/炭酸水' },
+    { name: 'ふんわり食パン 6枚切', cat: '食品/パン/食パン' },
+    { name: '手延べそうめん', cat: '食品/麺類/そうめん' },
+    { name: '減塩しょうゆ 1L', cat: '食品/調味料/しょうゆ' },
+    { name: '冷凍たこ焼き 20個', cat: '食品/冷凍食品/冷凍惣菜' },
+    { name: 'キッチンペーパー 4ロール', cat: '日用品/台所用品/キッチンペーパー', set: true, nf: true },
+    { name: '食器用洗剤 詰替', cat: '日用品/台所用品/洗剤', nf: true },
+    { name: 'ほうじ茶ラテ スティック', cat: '飲料/茶・コーヒー/ほうじ茶' },
+    { name: '博多明太子 切子', cat: '食品/水産加工品/明太子' },
+    { name: '信州みそ 750g', cat: '食品/調味料/みそ' },
+    { name: '冷凍枝豆 500g', cat: '食品/冷凍食品/冷凍野菜' },
+    { name: 'アイスコーヒー 無糖 1L', cat: '飲料/茶・コーヒー/コーヒー' },
   ];
+
+  // カテゴリマスタ（大 > 中 > 小）。商品に割り当てたカテゴリから組み立てる
+  MASTER.categories = {};
+  NAMES.forEach((n) => {
+    const [l, m, sm] = n.cat.split('/');
+    const mid = (MASTER.categories[l] = MASTER.categories[l] || {});
+    const small = (mid[m] = mid[m] || []);
+    if (!small.includes(sm)) small.push(sm);
+  });
 
   const T_2017 = new Date(2017, 2, 7, 19, 14, 52).getTime();
   const T_BASE = new Date(2026, 8, 24, 3, 56, 17).getTime();
@@ -75,6 +84,7 @@
     const r = rnd();
     return {
       id, code: String(10000000 + id), name: n.name, isSet: !!n.set, nonFood: !!n.nf,
+      catL: n.cat.split('/')[0], catM: n.cat.split('/')[1], catS: n.cat.split('/')[2],
       jan: rnd() < 0.4 ? String(100000000000 + randInt(1, 999)) : '49' + digits(11),
       maker: rnd() < 0.35 ? pick(MAKERS) : '',
       caseQty: pick([0, 1, 6, 12, 15, 24, 30]), ballQty: pick([0, 0, 2, 4, 6]),
@@ -105,6 +115,16 @@
       });
       varSeq++;
     }
+  });
+
+  // 商品規格名（例：ウィルキンソン炭酸　500ml×24本）
+  const productById = new Map(products.map((p) => [p.id, p]));
+  variants.forEach((v) => {
+    const p = productById.get(v.productId);
+    const unit = p.catL === '飲料' ? '本' : '個';
+    const qty = v.saleForm === 'ケース' ? (p.caseQty || 24) : v.saleForm === 'ボール' ? (p.ballQty || 6) : 0;
+    const spec = v.class1 ? v.class1 + (qty ? `×${qty}${unit}` : '') : (qty ? `${qty}${unit}入` : '');
+    v.name = spec ? `${p.name}　${spec}` : p.name;
   });
 
   const histories = [];
