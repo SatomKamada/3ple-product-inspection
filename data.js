@@ -137,7 +137,7 @@
       MASTER.historyShops.forEach(shop => { prices[shop] = randInt(10, 500) * 10; });
       histories.push({
         id: historySeq, variantId: v.id, productId: v.productId,
-        historyCode: 'PH' + String(historySeq).padStart(7, '0'),
+        historyCode: String(500000000 + historySeq),
         historyName: v.productName + (rnd() < 0.4 ? '【キャンペーン】' : ''),
         offerQty: randInt(10, 1000),
         postFrom: postedAt, postTo: postedAt + randInt(7, 30) * DAY,
@@ -173,8 +173,8 @@
       const allergens = nf ? [] : (rndA() < 0.3 ? [] : sampleA(ALLERGENS, 1, 4));
       attributes.push({
         id: attrSeq, productId: p.id, productCode: p.code, productName: p.name,
-        code: 'PA' + String(attrSeq).padStart(7, '0'),
-        attrNo: k + 1,
+        code: String(20000000 + attrSeq),
+        attrNo: String(k + 1).padStart(6, '0'), // 商品ごとに 000001 から連番
         isDefault: k === 0,
         origin: nf ? pickA(ORIGINS_NF) : pickA(ORIGINS),
         ingredients: (nf ? sampleA(INGREDIENTS_NF, 1, 3) : sampleA(INGREDIENTS, 2, 6)).join('、'),

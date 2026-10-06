@@ -175,9 +175,9 @@
 
   const COLUMNS = {
     products: [
-      { key: 'code', label: '商品コード', sort: true, cls: 'nowrap', render: (p) => (p.isSet ? '<span class="badge-set">セット品</span><br>' : '') + esc(p.code) },
+      { key: 'code', label: '商品コード', sort: true, cls: 'nowrap', render: (p) => (p.isSet ? '<span class="badge-set">セット品</span><br>' : '') + `<a href="#" class="js-focus" data-pid="${p.id}">${esc(p.code)}</a>` },
       { key: '_img', label: '画像', render: imgCell },
-      { key: 'name', label: '商品名', sort: true, cls: 'col-name', render: (r) => `<a href="#" class="js-focus" data-pid="${r.id}">${esc(r.name)}</a>` },
+      { key: 'name', label: '商品名', sort: true, cls: 'col-name' },
       { key: 'jan', label: 'JANコード', sort: true },
       { key: 'maker', label: 'メーカー', cls: 'col-narrow' },
       { key: 'caseQty', label: 'ケース入数', sort: true },
@@ -194,8 +194,7 @@
     ],
     attributes: [
       { key: 'code', label: '商品属性コード', sort: true, cls: 'nowrap' },
-      { key: '_img', label: '画像', render: imgCell },
-      { key: 'attrNo', label: '属性番号', sort: true },
+      { key: 'attrNo', label: '商品属性番号', sort: true },
       { key: 'isDefault', label: 'デフォルトフラグ', sort: true, render: (a) => flag(a.isDefault) },
       { key: 'origin', label: '原産国・産地', sort: true, cls: 'nowrap' },
       { key: 'ingredients', label: '原材料・成分', cls: 'col-text', render: (a) => textOrDash(a.ingredients) },

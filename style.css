@@ -51,8 +51,7 @@ a:hover { text-decoration: underline; }
 .search-card .card-body { padding: 24px 24px 28px; }
 .search-cols { --bs-gutter-x: 3rem; row-gap: 24px; }
 .search-col-title { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; padding-bottom: 8px; margin-bottom: 16px; border-bottom: 2px solid var(--line); }
-.search-col:first-child .search-col-title { border-bottom-color: #6f9bd6; }
-.search-col:last-child .search-col-title { border-bottom-color: #5fb88f; }
+.search-col .search-col-title { border-bottom-color: var(--ace-orange); }
 .field { margin-bottom: 18px; }
 .field:last-child { margin-bottom: 0; }
 .row.field { --bs-gutter-x: 1.5rem; --bs-gutter-y: 18px; }
