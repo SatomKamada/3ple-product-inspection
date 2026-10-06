@@ -137,20 +137,29 @@
     state.hasCond = { attributes: false, histories: useHist, variants: useVar };
     state.histSearched = useHist;
 
-    const hitProducts = products.filter((p) => {
-      if (!matchProduct(p, c)) return false;
-      if (useHist && !(histByProduct.get(p.id) || []).some((h) => matchHistory(h, c))) return false;
-      if (useVar && !(variantsByProduct.get(p.id) || []).some((v) => matchVariant(v, c))) return false;
-      return true;
-    });
-    const ids = new Set(hitProducts.map((p) => p.id));
-
-    state.results.products = hitProducts;
-    state.results.attributes = attributes.filter((a) => ids.has(a.productId));
-    state.results.variants = variants.filter((v) => ids.has(v.productId)).map((v) => ({ ...v, _hit: useVar && matchVariant(v, c) }));
-    state.results.histories = useHist
-      ? histories.filter((h) => ids.has(h.productId)).map((h) => ({ ...h, _hit: matchHistory(h, c) }))
-      : [];
+    if (useHist) {
+      // 掲載履歴を検索したとき：条件に一致した掲載履歴を起点に、紐づく商品・属性・規格だけを表示する
+      const hitHist = histories.filter((h) => matchHistory(h, c) &&
+        matchProduct(productById.get(h.productId), c) &&
+        (!useVar || matchVariant(variantById.get(h.variantId), c)));
+      const pids = new Set(hitHist.map((h) => h.productId));
+      const vids = new Set(hitHist.map((h) => h.variantId));
+      state.results.products = products.filter((p) => pids.has(p.id));
+      state.results.attributes = attributes.filter((a) => pids.has(a.productId));
+      state.results.variants = variants.filter((v) => vids.has(v.id)).map((v) => ({ ...v, _hit: true }));
+      state.results.histories = hitHist.map((h) => ({ ...h, _hit: true }));
+    } else {
+      const hitProducts = products.filter((p) => {
+        if (!matchProduct(p, c)) return false;
+        if (useVar && !(variantsByProduct.get(p.id) || []).some((v) => matchVariant(v, c))) return false;
+        return true;
+      });
+      const ids = new Set(hitProducts.map((p) => p.id));
+      state.results.products = hitProducts;
+      state.results.attributes = attributes.filter((a) => ids.has(a.productId));
+      state.results.variants = variants.filter((v) => ids.has(v.productId)).map((v) => ({ ...v, _hit: useVar && matchVariant(v, c) }));
+      state.results.histories = [];
+    }
 
     const count = (rows, key, skip) => rows.reduce((m, r) => (skip(r) ? m : m.set(r[key], (m.get(r[key]) || 0) + 1)), new Map());
     state.linkCount.attributes = count(state.results.attributes, 'productId', () => false);
@@ -159,7 +168,9 @@
   }
 
   const imgCell = () => '<div class="thumb"><i class="bi bi-image"></i></div>';
-  const hitBadge = (r) => (r._hit ? '<span class="badge-hit">一致</span>' : '');
+  // 掲載履歴を検索したときは表示行がすべて条件一致なので「一致」バッジは出さない
+  const showHit = (r) => r._hit && !state.histSearched;
+  const hitBadge = (r) => (showHit(r) ? '<span class="badge-hit">一致</span>' : '');
   const statusBadge = (s) => `<span class="status status-${esc(s)}">${esc(s)}</span>`;
   const pubGrid = (pub) => '<div class="pub-grid">' + MASTER.channels.map((ch) => `<span>${esc(ch)} <span class="${pub[ch] ? 'on' : 'off'}">${pub[ch] ? '◯' : '－'}</span></span>`).join('') + '</div>';
   const eyeBtn = (label) => `<button type="button" class="icon-btn js-mock" data-msg="${esc(label)}の詳細画面へ"><i class="bi bi-eye"></i></button>`;
@@ -167,6 +178,7 @@
     const keys = ['本店', 'd店', 'd払い店', 'Yahoo店', '外部1', '外部2', '外部3'];
     return '<div class="price-grid">' + keys.map((k) => `<div><span class="price-label">${esc(k)}</span><br>${yen(prices[k])}</div>`).join('') + '</div>';
   };
+  const goProductBtn = (pid) => `<button type="button" class="btn btn-outline-secondary js-goto" data-pid="${pid}" data-goto="products">商品を表示</button>`;
   const flag = (on) => (on ? '<span class="flag-on">◯</span>' : '<span class="flag-off">－</span>');
   const textOrDash = (t) => (t ? esc(t) : '<span class="empty-val">－</span>');
   const nutritionCell = (n) => (n
@@ -202,6 +214,7 @@
       { key: 'allergens', label: 'アレルゲン情報', cls: 'col-text', render: (a) => textOrDash(a.allergens) },
       { key: 'contamination', label: 'コンタミネーション情報', cls: 'col-text', render: (a) => textOrDash(a.contamination) },
       { key: 'isLabelless', label: 'ラベルレスフラグ', sort: true, render: (a) => flag(a.isLabelless) },
+      { key: '_links', label: '紐づき', render: (a) => `<div class="link-btns">${goProductBtn(a.productId)}</div>` },
     ],
     variants: [
       { key: 'code', label: '商品規格コード', sort: true, cls: 'nowrap', render: (v) => `<a href="#" class="js-mock">${esc(v.code)}</a>` + hitBadge(v) },
@@ -215,7 +228,7 @@
       { key: 'updatedAt', label: '更新日時', sort: true, cls: 'nowrap', render: (v) => fmtDate(v.updatedAt) },
       { key: '_links', label: '紐づき', render: (v) => {
           const label = state.histSearched ? `掲載履歴 ${state.linkCount.histories.get(v.id) || 0}件` : '掲載履歴を表示';
-          return `<div class="link-btns"><button type="button" class="btn btn-outline-primary js-goto" data-vid="${v.id}" data-goto="histories">${label}</button></div>`;
+          return `<div class="link-btns">${goProductBtn(v.productId)}<button type="button" class="btn btn-outline-primary js-goto" data-vid="${v.id}" data-goto="histories">${label}</button></div>`;
         } },
     ],
     histories: [
@@ -228,6 +241,7 @@
       { key: 'saleTo', label: '販売終了日時', sort: true, cls: 'nowrap', render: (h) => fmtDate(h.saleTo) },
       { key: 'prices', label: '販売価格', render: (h) => priceGrid(h.prices) },
       { key: 'status', label: '公開状態', sort: true, render: (h) => statusBadge(h.status) },
+      { key: '_links', label: '紐づき', render: (h) => `<div class="link-btns"><button type="button" class="btn btn-outline-secondary js-goto" data-vid="${h.variantId}" data-goto="variants">商品規格を表示</button></div>` },
       { key: '_actions', label: '', render: () => eyeBtn('掲載履歴') },
     ],
   };
@@ -240,12 +254,17 @@
       return [];
     }
     let rows = state.results[tab];
-    if (tab === 'histories' && state.focusVariantId != null) {
-      rows = rows.filter((r) => r.variantId === state.focusVariantId);
+    if (state.focusVariantId != null) {
+      // 商品規格で絞り込み中：その規格と、紐づく商品・属性・掲載履歴だけ
+      const v = variantById.get(state.focusVariantId);
+      rows = rows.filter((r) => (tab === 'histories' ? r.variantId === v.id
+        : tab === 'variants' ? r.id === v.id
+        : tab === 'products' ? r.id === v.productId
+        : r.productId === v.productId));
     } else if (state.focusProductId != null) {
       rows = rows.filter((r) => (tab === 'products' ? r.id : r.productId) === state.focusProductId);
     }
-    if (tab !== 'products' && state.matchOnly && state.hasCond[tab]) rows = rows.filter((r) => r._hit);
+    if (tab !== 'products' && state.matchOnly && state.hasCond[tab] && !state.histSearched) rows = rows.filter((r) => r._hit);
     return rows;
   }
 
@@ -298,7 +317,7 @@
     }).join('') + '</tr>';
 
     const tbody = pageRows.length
-      ? pageRows.map((r) => `<tr class="${r._hit ? 'row-hit' : ''}">` + cols.map((c) => `<td class="${c.cls || ''}">${c.render ? c.render(r) : esc(r[c.key])}</td>`).join('') + '</tr>').join('')
+      ? pageRows.map((r) => `<tr class="${showHit(r) ? 'row-hit' : ''}">` + cols.map((c) => `<td class="${c.cls || ''}">${c.render ? c.render(r) : esc(r[c.key])}</td>`).join('') + '</tr>').join('')
       : `<tr><td colspan="${cols.length}" class="empty">条件に一致する${TAB_LABEL[tab]}はありません。</td></tr>`;
 
     const info = total ? `全 ${total} 件中 ${start + 1}〜${Math.min(start + state.perPage, total)} 件を表示` : '0 件';
@@ -334,7 +353,7 @@
     } else if (state.focusVariantId != null) {
       const v = variantById.get(state.focusVariantId);
       bar.hidden = false;
-      bar.innerHTML = `<i class="bi bi-funnel"></i> 商品規格 <strong>${esc(v.code || '（コードなし）')}</strong>「${esc(v.name)}」に紐づく掲載履歴を表示しています ${unfocusBtn}`;
+      bar.innerHTML = `<i class="bi bi-funnel"></i> 商品規格 <strong>${esc(v.code || '（コードなし）')}</strong>「${esc(v.name)}」に紐づく情報だけを表示しています ${unfocusBtn}`;
     } else {
       bar.hidden = true; bar.innerHTML = '';
     }
