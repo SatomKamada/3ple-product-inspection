@@ -17,7 +17,13 @@
 
   const MASTER = {
     businessTypes: ['EC', '卸売', '店舗', '法人'],
-    choppleTypes: ['SEP', 'NOR', 'LTD'],
+    choppleTypes: ['SEP', '仕入', '仕入（NBプロパー）', '仕入（アウトレット）', '受発注', '受発注（NBプロパー）', '直送MD', '直送MD（NBプロパー）', '直送PF'],
+    // 検索画面での並び（左：SEP・仕入・受発注、右：直送）
+    choppleGroups: [
+      ['SEP', '仕入', '仕入（NBプロパー）', '仕入（アウトレット）'],
+      ['受発注', '受発注（NBプロパー）'],
+      ['直送MD', '直送MD（NBプロパー）', '直送PF'],
+    ],
     specTypes: ['通常', '賞味切迫', '抽選'],
     saleForms: ['ピース', 'ボール', 'ケース'],
     productStatuses: ['公開', '非公開', '廃止'],
@@ -158,6 +164,7 @@
   const INGREDIENTS = ['砂糖', '小豆', '小麦粉', '植物油脂', '食塩', '乳製品', '卵', 'でん粉', 'ぶどう糖果糖液糖', '香料', '酸味料', '寒天', 'カカオマス', 'りんご', '緑茶', '大豆', '米', 'かつお節エキス'];
   const INGREDIENTS_NF = ['パルプ', 'ポリウレタン', 'ポリエステル', '界面活性剤（アルキルエーテル硫酸エステルナトリウム）', '安定化剤', '香料'];
   const ALLERGENS = ['卵', '乳', '小麦', 'えび', 'かに', 'そば', '落花生', 'くるみ', '大豆', 'ごま', 'りんご'];
+  const REMARKS = ['パッケージ変更に伴い原材料表記を更新', '輸入元変更予定', '季節限定品', 'アレルゲン表示を再確認済み', '栄養成分は推定値', 'リニューアル前の旧仕様'];
   const sampleA = (arr, min, max) => {
     const pool = arr.slice(); const out = []; const n = intA(min, Math.min(max, pool.length));
     for (let i = 0; i < n; i++) out.push(pool.splice(Math.floor(rndA() * pool.length), 1)[0]);
@@ -173,8 +180,8 @@
       const allergens = nf ? [] : (rndA() < 0.3 ? [] : sampleA(ALLERGENS, 1, 4));
       attributes.push({
         id: attrSeq, productId: p.id, productCode: p.code, productName: p.name,
-        code: String(20000000 + attrSeq),
-        attrNo: String(k + 1).padStart(6, '0'), // 商品ごとに 000001 から連番
+        attrNo: String(k + 1).padStart(3, '0'), // 商品ごとに 001 から連番
+        code: p.code + String(k + 1).padStart(3, '0'), // 商品コード（8桁）＋属性番号（3桁）
         isDefault: k === 0,
         origin: nf ? pickA(ORIGINS_NF) : pickA(ORIGINS),
         ingredients: (nf ? sampleA(INGREDIENTS_NF, 1, 3) : sampleA(INGREDIENTS, 2, 6)).join('、'),
@@ -185,7 +192,12 @@
         allergens: allergens.join('、'),
         contamination: nf || rndA() < 0.5 ? '' : '本品製造工場では' + sampleA(ALLERGENS, 1, 3).join('・') + 'を含む製品を生産しています。',
         isLabelless: rndA() < 0.2,
+        remarks: rndA() < 0.6 ? '' : pickA(REMARKS),
+        createdAt: 0, updatedAt: 0,
       });
+      const a = attributes[attributes.length - 1];
+      a.createdAt = Math.floor(p.createdAt + rndA() * (T_END - p.createdAt) * 0.5);
+      a.updatedAt = rndA() < 0.3 ? a.createdAt : Math.floor(a.createdAt + rndA() * (T_END - a.createdAt));
       attrSeq++;
     }
   });

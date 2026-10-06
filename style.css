@@ -58,6 +58,13 @@ a:hover { text-decoration: underline; }
 .cat-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 8px; }
 .cat-row .form-select:disabled { background-color: #f6f7f9; color: #8a8f96; }
 .btn-add-cat { font-size: 12px; padding: 3px 10px; }
+.check-panel { border: 1px solid #d5dae0; border-radius: var(--bs-border-radius); padding: 8px 12px; display: flex; flex-wrap: wrap; gap: 4px 20px; min-height: 40px; align-items: center; }
+.check-panel .form-check { margin: 0; }
+.chopple-panel { display: flex; align-items: stretch; padding: 10px 0; }
+.chopple-left { flex: 1; display: flex; flex-wrap: wrap; row-gap: 10px; }
+.chopple-col { display: flex; flex-direction: column; gap: 6px; padding: 0 14px; white-space: nowrap; }
+.chopple-direct { border-left: 1px dashed #d5dae0; }
+@media (max-width: 575px) { .chopple-panel { flex-direction: column; row-gap: 10px; } .chopple-direct { border-left: none; border-top: 1px dashed #d5dae0; padding-top: 10px; } }
 .form-label { font-size: 13px; margin-bottom: 6px; display: inline-flex; align-items: center; }
 .form-control, .form-select { font-size: 14px; border-color: #d5dae0; padding-top: .5rem; padding-bottom: .5rem; }
 .form-control::placeholder { color: #8a8f96; }
@@ -95,7 +102,7 @@ a:hover { text-decoration: underline; }
 .table-wrap { overflow-x: auto; }
 .table-x { width: 100%; margin: 0; font-size: 13px; border-collapse: collapse; }
 .table-x th, .table-x td { padding: 10px 8px; border-bottom: 1px solid var(--line); vertical-align: middle; }
-.table-x thead th { font-weight: 700; vertical-align: bottom; line-height: 1.35; }
+.table-x thead th { font-weight: 700; vertical-align: bottom; line-height: 1.35; min-width: 76px; }
 .table-x tbody tr:hover { background: #fafbfc; }
 .tab-products   thead th { background: var(--hdr-products); }
 .tab-attributes thead th { background: var(--hdr-attributes); }

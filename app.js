@@ -10,7 +10,7 @@
     results: { products: [], attributes: [], histories: [], variants: [] },
     linkCount: { attributes: new Map(), histories: new Map(), variants: new Map() },
     focusProductId: null, focusVariantId: null,
-    matchOnly: false, perPage: 20, page: resetPages(),
+    perPage: 20, page: resetPages(),
     sort: { products: { key: 'code', dir: 'asc' }, attributes: { key: 'code', dir: 'asc' }, histories: { key: 'historyCode', dir: 'asc' }, variants: { key: 'code', dir: 'asc' } },
   };
 
@@ -31,6 +31,8 @@
     const terms = q.split(/[,、，\s]+/).filter(Boolean);
     return terms.length === 0 || terms.includes(String(val ?? ''));
   };
+  // チェックボックス項目：チェックが無ければ条件なし、あればいずれかに一致
+  const anyOf = (val, list) => !list || list.includes(val);
   const inRange = (ms, from, to) => {
     if (from && ms < new Date(from).getTime()) return false;
     if (to && ms > new Date(to).getTime()) return false;
@@ -64,10 +66,10 @@
     { key: 'pUpdTo', id: 's-pupd-to', label: '更新日時まで', scope: 'products' },
     { key: 'variantCode', id: 's-variant-code', label: '商品規格コード', scope: 'variants' },
     { key: 'historyCode', id: 's-history', label: '掲載履歴コード', scope: 'histories' },
-    { key: 'choppleType', id: 's-chopple', label: 'ちょっぷル種別', scope: 'variants' },
-    { key: 'saleForm', id: 's-saleform', label: '販売形態', scope: 'variants' },
+    { key: 'choppleType', id: 's-chopple', label: 'ちょっぷル種別', scope: 'variants', multi: true },
+    { key: 'saleForm', id: 's-saleform', label: '販売形態', scope: 'variants', multi: true },
     { key: 'hontenStatus', id: 's-honten', label: '本店公開状態', scope: 'variants' },
-    { key: 'specType', id: 's-spec', label: '規格区分', scope: 'variants' },
+    { key: 'specType', id: 's-spec', label: '規格区分', scope: 'variants', multi: true },
     { key: 'postFrom', id: 's-post-from', label: '掲載期間から', scope: 'histories' },
     { key: 'postTo', id: 's-post-to', label: '掲載期間まで', scope: 'histories' },
     { key: 'saleFrom', id: 's-sale-from', label: '販売期間から', scope: 'histories' },
@@ -109,7 +111,15 @@
 
   function readConditions() {
     const c = {};
-    COND_DEFS.forEach((d) => { if (d.id) c[d.key] = $('#' + d.id).value.trim(); });
+    COND_DEFS.forEach((d) => {
+      if (!d.id) return;
+      if (d.multi) {
+        const vals = $$(`#${d.id} input:checked`).map((i) => i.value);
+        c[d.key] = vals.length ? vals : '';
+      } else {
+        c[d.key] = $('#' + d.id).value.trim();
+      }
+    });
     const cats = readCategories();
     c.categories = cats.length ? cats : '';
     return c;
@@ -127,7 +137,7 @@
   }
   function matchVariant(v, c) {
     const hontenOk = c.hontenStatus === '公開' ? v.publish['本'] : c.hontenStatus === '非公開' ? !v.publish['本'] : true;
-    return exactAny(v.code, c.variantCode) && (!c.choppleType || v.choppleType === c.choppleType) && (!c.specType || v.specType === c.specType) && (!c.saleForm || v.saleForm === c.saleForm) && hontenOk;
+    return exactAny(v.code, c.variantCode) && anyOf(v.choppleType, c.choppleType) && anyOf(v.specType, c.specType) && anyOf(v.saleForm, c.saleForm) && hontenOk;
   }
 
   function runSearch() {
@@ -163,8 +173,8 @@
 
     const count = (rows, key, skip) => rows.reduce((m, r) => (skip(r) ? m : m.set(r[key], (m.get(r[key]) || 0) + 1)), new Map());
     state.linkCount.attributes = count(state.results.attributes, 'productId', () => false);
-    state.linkCount.variants = count(state.results.variants, 'productId', (r) => state.matchOnly && state.hasCond.variants && !r._hit);
-    state.linkCount.histories = count(state.results.histories, 'variantId', (r) => state.matchOnly && state.hasCond.histories && !r._hit);
+    state.linkCount.variants = count(state.results.variants, 'productId', () => false);
+    state.linkCount.histories = count(state.results.histories, 'variantId', () => false);
   }
 
   const imgCell = () => '<div class="thumb"><i class="bi bi-image"></i></div>';
@@ -214,6 +224,9 @@
       { key: 'allergens', label: 'アレルゲン情報', cls: 'col-text', render: (a) => textOrDash(a.allergens) },
       { key: 'contamination', label: 'コンタミネーション情報', cls: 'col-text', render: (a) => textOrDash(a.contamination) },
       { key: 'isLabelless', label: 'ラベルレスフラグ', sort: true, render: (a) => flag(a.isLabelless) },
+      { key: 'remarks', label: '備考', cls: 'col-text', render: (a) => textOrDash(a.remarks) },
+      { key: 'createdAt', label: '作成日時', sort: true, cls: 'nowrap', render: (a) => fmtDate(a.createdAt) },
+      { key: 'updatedAt', label: '更新日時', sort: true, cls: 'nowrap', render: (a) => fmtDate(a.updatedAt) },
       { key: '_links', label: '紐づき', render: (a) => `<div class="link-btns">${goProductBtn(a.productId)}</div>` },
     ],
     variants: [
@@ -264,7 +277,6 @@
     } else if (state.focusProductId != null) {
       rows = rows.filter((r) => (tab === 'products' ? r.id : r.productId) === state.focusProductId);
     }
-    if (tab !== 'products' && state.matchOnly && state.hasCond[tab] && !state.histSearched) rows = rows.filter((r) => r._hit);
     return rows;
   }
 
@@ -339,6 +351,7 @@
         return;
       }
       let v = state.cond[d.key];
+      if (Array.isArray(v)) v = v.join('、');
       if (/(From|To)$/.test(d.key)) v = v.replace('T', ' ').replace(/-/g, '/');
       chips.push(`<span class="cond-chip">${scope}${esc(d.label)}：${esc(v)}</span>`);
     });
@@ -396,7 +409,6 @@
     $('#btnAddCat').addEventListener('click', () => $('#catRows').insertAdjacentHTML('beforeend', catRowHtml()));
     $('#catRows').addEventListener('change', onCatChange);
     $('#perPage').addEventListener('change', (e) => { state.perPage = Number(e.target.value); state.page = resetPages(); renderAll(); });
-    $('#matchOnly').addEventListener('change', (e) => { state.matchOnly = e.target.checked; runSearch(); renderAll(); });
 
     $('#results').addEventListener('click', (e) => {
       const pane = e.target.closest('.tab-pane');
@@ -431,6 +443,17 @@
       const opts = MASTER[sel.dataset.master] || [];
       sel.innerHTML = '<option value="">選択</option>' + opts.map((o) => opt(o)).join('');
     });
+    let chkSeq = 0;
+    const checkHtml = (name, v) => { const id = `chk-${++chkSeq}`; return `<div class="form-check"><input class="form-check-input" type="checkbox" name="${name}" id="${id}" value="${esc(v)}"><label class="form-check-label" for="${id}">${esc(v)}</label></div>`; };
+    $$('[data-master-check]').forEach((box) => {
+      box.innerHTML = (MASTER[box.dataset.masterCheck] || []).map((v) => checkHtml(box.id, v)).join('');
+    });
+    // 左：SEP・仕入・受発注（幅が足りなければ縦に積む）／右：直送
+    const groups = MASTER.choppleGroups;
+    const col = (g) => `<div class="chopple-col">${g.map((v) => checkHtml('s-chopple', v)).join('')}</div>`;
+    $('#s-chopple').innerHTML =
+      `<div class="chopple-left">${groups.slice(0, -1).map(col).join('')}</div>` +
+      `<div class="chopple-direct">${col(groups[groups.length - 1])}</div>`;
     resetCatRows();
     $$('[data-bs-toggle="tooltip"]').forEach((el) => new bootstrap.Tooltip(el));
     bindEvents(); doSearch();

@@ -9,227 +9,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-  <style>
-:root {
-  --bg: #f3f6fa;
-  --line: #dfe3e8;
-  --text: #222;
-  --muted: #6b7280;
-  --link: #3a7bd5;
-  --primary: #3a7bd5;
-  --hdr-products: #b3cbe9;   /* 商品一覧ヘッダー（青） */
-  --hdr-attributes: #f3ddbb; /* 商品属性情報ヘッダー（ベージュ） */
-  --hdr-variants: #c4e8d7;   /* 商品規格ヘッダー（緑） */
-  --ace-orange: #fd7220;    /* ヘッダー */
-  --ace-sidebar: #fbe0d6;   /* サイドメニュー */
-  --ace-sidebar-line: #f0c9ba;
-  --ace-sidebar-active: #f6c8b5;
-}
-
-body {
-  font-family: "Noto Sans JP", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
-  font-size: 14px;
-  background: var(--bg);
-  color: var(--text);
-}
-
-a { color: var(--link); text-decoration: none; }
-a:hover { text-decoration: underline; }
-
-/* ===== レイアウト（ace-mock準拠） ===== */
-.app-header {
-  height: 64px; background: var(--ace-orange); color: #fff;
-  display: flex; align-items: center; padding: 0 20px 0 12px;
-  position: sticky; top: 0; z-index: 1030;
-}
-.app-logo { color: #fff; font-weight: 700; font-size: 30px; letter-spacing: .02em; width: 188px; }
-.app-shop { color: #fff; font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 14px; }
-.app-shop .bi { font-size: 22px; -webkit-text-stroke: 1px; }
-.app-logo:hover, .app-shop:hover { color: #fff; text-decoration: none; }
-.mock-pill {
-  background: #fff; color: var(--ace-orange); font-weight: 700; font-size: 14px;
-  border-radius: 20px; padding: 6px 14px; letter-spacing: .04em;
-}
-.app-user {
-  background: none; border: none; color: #fff; font-weight: 700; font-size: 14px;
-  display: flex; align-items: center; gap: 8px; padding: 0;
-}
-.app-user .bi-person-circle { font-size: 30px; }
-.app-user .bi-chevron-down { font-size: 18px; -webkit-text-stroke: 1px; }
-
-.app-body { display: flex; min-height: calc(100vh - 64px); }
-.app-sidebar {
-  width: 200px; flex-shrink: 0; background: var(--ace-sidebar);
-  border-right: 1px solid var(--ace-sidebar-line);
-}
-.side-menu, .side-sub { list-style: none; padding: 0; margin: 0; }
-.side-menu > li { border-bottom: 1px solid var(--ace-sidebar-line); }
-.side-menu a {
-  display: flex; align-items: center; gap: 10px;
-  color: #333; padding: 12px 14px; font-size: 14px;
-}
-.side-menu a:hover { text-decoration: none; background: rgba(255,255,255,.35); }
-.side-menu a > .bi:first-child { font-size: 17px; color: #444; width: 20px; text-align: center; }
-.side-menu .caret { margin-left: auto; font-size: 15px; -webkit-text-stroke: .6px; transition: transform .15s; }
-.side-menu a[aria-expanded="true"] .caret { transform: rotate(180deg); }
-.side-sub a { padding: 9px 14px 9px 44px; font-size: 13px; }
-.side-sub a.current { background: var(--ace-sidebar-active); font-weight: 700; }
-
-.app-main { flex: 1; min-width: 0; background: var(--bg); }
-.page-title {
-  display: flex; align-items: baseline; gap: 10px;
-  background: #fff; padding: 18px 16px 16px;
-}
-.page-title h1 { font-size: 20px; font-weight: 700; margin: 0; }
-.page-title .sub { font-size: 13px; }
-.page-content { padding: 20px 16px 48px; }
-
-/* ===== 検索窓 ===== */
-.search-card { border: none; border-radius: 4px; }
-.search-card .card-header {
-  background: #fff; display: flex; align-items: center; cursor: pointer;
-  font-size: 14px; padding: 10px 16px; border-bottom: 1px solid var(--line);
-}
-.search-card .toggle-ico { font-size: 18px; -webkit-text-stroke: 1px; }
-.search-card .card-header .bi-search { font-size: 18px; }
-.search-card .card-header[aria-expanded="false"] .toggle-ico { transform: rotate(180deg); }
-.toggle-ico { transition: transform .15s; }
-.search-card .card-body { padding: 24px 24px 28px; }
-.search-card .row { --bs-gutter-x: 3rem; }
-.form-label { font-size: 13px; margin-bottom: 6px; display: inline-flex; align-items: center; }
-.form-control, .form-select { font-size: 14px; border-color: #d5dae0; padding-top: .5rem; padding-bottom: .5rem; }
-.form-control::placeholder { color: #8a8f96; }
-.help {
-  display: inline-flex; width: 18px; height: 18px; border-radius: 50%;
-  background: #222; color: #fff; font-size: 11px; font-weight: 700;
-  align-items: center; justify-content: center; margin-left: 4px; cursor: help;
-}
-.ms-note { font-size: 11px; color: var(--muted); margin-left: 6px; }
-
-/* 複数選択ドロップダウン */
-.ms-toggle {
-  width: 100%; text-align: left; background-color: #fff;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.ms-menu { width: 100%; padding: 10px 14px; max-height: 380px; overflow-y: auto; }
-.ms-menu.ms-wide { min-width: 480px; }
-.ms-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 28px; }
-.ms-group + .ms-group { margin-top: 10px; }
-.ms-group-label {
-  font-size: 11px; font-weight: 700; color: var(--muted);
-  border-bottom: 1px solid var(--line); padding-bottom: 2px; margin-bottom: 4px;
-}
-.ms-item { display: flex; align-items: center; gap: 8px; padding: 4px 4px; border-radius: 3px; cursor: pointer; font-size: 14px; margin: 0; }
-.ms-item:hover { background: #f3f6fa; }
-.ms-item .form-check-input { margin: 0; flex-shrink: 0; }
-.ms-foot { border-top: 1px solid var(--line); margin-top: 10px; padding-top: 6px; text-align: right; }
-.ms-clear { font-size: 12px; }
-
-.range { display: flex; align-items: center; gap: 16px; }
-.range .form-control { flex: 1; min-width: 0; }
-
-.search-actions { display: flex; justify-content: center; gap: 12px; margin: 20px 0 24px; }
-.btn-search { min-width: 200px; }
-
-/* ===== 検索結果 ===== */
-.result-card { border: none; border-radius: 4px; }
-.result-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; margin-bottom: 12px; }
-.result-summary { font-size: 15px; font-weight: 700; }
-.result-summary .num { font-size: 18px; margin: 0 2px; }
-.result-tools { display: flex; align-items: center; gap: 20px; font-size: 13px; }
-.cond-list { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 6px; }
-.cond-chip { font-size: 12px; background: #f1f3f6; border: 1px solid var(--line); border-radius: 3px; padding: 1px 8px; }
-.cond-chip .scope { color: var(--muted); margin-right: 4px; }
-
-.focus-bar {
-  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-  background: #eaf2fc; border: 1px solid #c8daf2; border-radius: 4px;
-  padding: 8px 12px; margin-bottom: 12px; font-size: 13px;
-}
-
-/* タブ */
-.result-tabs { border-bottom: 2px solid var(--line); }
-.result-tabs .nav-link {
-  color: var(--muted); border: none; border-bottom: 3px solid transparent;
-  margin-bottom: -2px; padding: 10px 18px; display: flex; align-items: center; gap: 6px;
-}
-.result-tabs .nav-link:hover { color: var(--text); }
-.result-tabs .nav-link.active { color: var(--text); font-weight: 700; background: none; }
-.result-tabs .tab-btn-products.active   { border-bottom-color: #6f9bd6; }
-.result-tabs .tab-btn-attributes.active { border-bottom-color: #d9a85a; }
-.result-tabs .tab-btn-variants.active   { border-bottom-color: #5fb88f; }
-.tab-count {
-  background: #e7ebf0; color: #333; border-radius: 10px;
-  font-size: 12px; padding: 0 8px; font-weight: 500;
-}
-
-.pane-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding: 14px 0 10px; }
-.pane-info { font-size: 13px; color: var(--muted); }
-
-/* ページャー（画像2準拠） */
-.pager { display: flex; justify-content: center; flex: 1; }
-.pager .pagination { margin: 0; }
-.pager .page-link { color: var(--link); font-size: 13px; padding: 5px 11px; }
-.pager .page-item.active .page-link { background: var(--primary); border-color: var(--primary); color: #fff; }
-.pager .ellipsis { padding: 5px 6px; color: var(--muted); }
-
-/* テーブル */
-.table-wrap { overflow-x: auto; }
-.table-x { width: 100%; margin: 0; font-size: 13px; border-collapse: collapse; }
-.table-x th, .table-x td { padding: 10px 8px; border-bottom: 1px solid var(--line); vertical-align: middle; }
-.table-x thead th { font-weight: 700; vertical-align: bottom; line-height: 1.35; }
-.table-x tbody tr:hover { background: #fafbfc; }
-.tab-products   thead th { background: var(--hdr-products); }
-.tab-attributes thead th { background: var(--hdr-attributes); }
-.tab-variants   thead th { background: var(--hdr-variants); }
-.table-x th.sortable { cursor: pointer; user-select: none; }
-.table-x th .sort-ico { color: #7a8594; font-size: 12px; }
-.table-x th .sort-ico.active { color: #111; }
-.table-x .nowrap { white-space: nowrap; }
-.table-x .num { text-align: left; }
-.col-name { min-width: 180px; }
-.col-narrow { max-width: 90px; }
-.col-remarks { min-width: 160px; }
-
-.thumb {
-  width: 44px; height: 44px; background: #f4f5f7; border-radius: 4px;
-  display: flex; align-items: center; justify-content: center; color: #cfd4db; font-size: 18px;
-}
-.badge-set { display: inline-block; background: #fbd8b0; color: #8a4b12; border-radius: 10px; font-size: 11px; padding: 0 8px; margin-bottom: 2px; }
-.badge-hit { display: inline-block; background: var(--primary); color: #fff; border-radius: 3px; font-size: 10px; padding: 0 5px; margin-left: 4px; vertical-align: 1px; }
-tr.row-hit td:first-child { box-shadow: inset 3px 0 0 var(--primary); }
-
-.status { display: inline-block; font-size: 12px; padding: 1px 8px; border-radius: 3px; white-space: nowrap; }
-.status-公開 { background: #e3f3ea; color: #1d7a46; }
-.status-非公開 { background: #eceff3; color: #555; }
-.status-廃止 { background: #fbe7e7; color: #b42318; }
-
-/* 公開状態グリッド（画像3準拠） */
-.pub-grid { display: flex; flex-wrap: wrap; width: 196px; gap: 2px 8px; font-size: 11px; font-weight: 700; color: #666; }
-.pub-grid .on  { color: #d93636; font-weight: 400; }
-.pub-grid .off { color: #b5bcc5; font-weight: 400; }
-
-.link-btns { display: flex; flex-direction: column; gap: 4px; }
-.link-btns .btn { font-size: 12px; padding: 1px 8px; white-space: nowrap; }
-.actions { display: flex; align-items: center; gap: 10px; }
-.btn-receive { font-size: 12px; padding: 3px 8px; white-space: nowrap; }
-.icon-btn { background: none; border: none; color: #444; font-size: 18px; padding: 0; line-height: 1; }
-.icon-btn:hover { color: var(--primary); }
-
-.empty { text-align: center; color: var(--muted); padding: 40px 0 !important; }
-
-:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
-
-@media (max-width: 900px) {
-  .app-sidebar { display: none; }
-  .app-logo { width: auto; margin-right: 16px; }
-}
-
-</style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<!-- ===== ヘッダー（ace-mock準拠） ===== -->
 <header class="app-header">
   <a class="app-logo" href="#">ACE</a>
   <a class="app-shop" href="#">サンプル百貨店<i class="bi bi-chevron-right"></i></a>
@@ -247,7 +30,6 @@ tr.row-hit td:first-child { box-shadow: inset 3px 0 0 var(--primary); }
 </header>
 
 <div class="app-body">
-  <!-- ===== サイドメニュー ===== -->
   <nav class="app-sidebar" aria-label="メニュー">
     <ul class="side-menu">
       <li><a href="#"><i class="bi bi-diagram-3-fill"></i>AALMホーム</a></li>
@@ -270,7 +52,6 @@ tr.row-hit td:first-child { box-shadow: inset 3px 0 0 var(--primary); }
     </ul>
   </nav>
 
-  <!-- ===== メイン ===== -->
   <main class="app-main">
     <div class="page-title">
       <h1>商品横断検索</h1>
@@ -278,7 +59,6 @@ tr.row-hit td:first-child { box-shadow: inset 3px 0 0 var(--primary); }
     </div>
 
     <div class="page-content">
-    <!-- ===== 検索窓 ===== -->
     <form id="searchForm" autocomplete="off">
       <div class="card search-card">
         <div class="card-header" data-bs-toggle="collapse" data-bs-target="#searchBody" role="button" aria-expanded="true">
@@ -287,111 +67,97 @@ tr.row-hit td:first-child { box-shadow: inset 3px 0 0 var(--primary); }
         </div>
         <div id="searchBody" class="collapse show">
           <div class="card-body">
-            <div class="row g-3">
-              <div class="col-md-6">
-                <label class="form-label" for="s-name">商品名<span class="help" data-bs-toggle="tooltip" title="部分一致で検索します">?</span></label>
-                <input type="text" class="form-control" id="s-name">
-              </div>
-              <div class="col-md-6">
-                <label class="form-label" for="s-code">商品コード<span class="help" data-bs-toggle="tooltip" title="カンマ区切りで複数指定できます（部分一致）">?</span></label>
-                <input type="text" class="form-control" id="s-code" placeholder="10000001, 10000002">
-              </div>
-
-              <div class="col-md-6">
-                <label class="form-label" for="s-jan">JANコード<span class="help" data-bs-toggle="tooltip" title="カンマ区切りで複数指定できます（部分一致）">?</span></label>
-                <input type="text" class="form-control" id="s-jan" placeholder="4944929005288, 100000000064">
-              </div>
-              <div class="col-md-6">
-                <label class="form-label" for="s-variant-code">商品規格コード<span class="help" data-bs-toggle="tooltip" title="カンマ区切りで複数指定できます（部分一致）">?</span></label>
-                <input type="text" class="form-control" id="s-variant-code" placeholder="100000000012, 110100000001">
-              </div>
-
-              <div class="col-md-6">
-                <label class="form-label" for="s-history">掲載履歴コード<span class="help" data-bs-toggle="tooltip" title="カンマ区切りで複数指定できます（部分一致）">?</span></label>
-                <input type="text" class="form-control" id="s-history" placeholder="PH0000001, PH0000002">
-              </div>
-              <div class="col-md-6">
-                <label class="form-label" for="s-business">業態区分</label>
-                <select class="form-select" id="s-business" data-master="businessTypes"></select>
-              </div>
-
-              <div class="col-md-6">
-                <span class="form-label">ちょっぷル種別<small class="ms-note">複数選択可</small></span>
-                <div class="dropdown ms" id="s-chopple" data-master="choppleTypes"></div>
-              </div>
-              <div class="col-md-6">
-                <span class="form-label">規格区分<small class="ms-note">複数選択可</small></span>
-                <div class="dropdown ms" id="s-spec" data-master="specTypes"></div>
-              </div>
-
-              <div class="col-md-6">
-                <span class="form-label">販売形態<small class="ms-note">複数選択可</small></span>
-                <div class="dropdown ms" id="s-saleform" data-master="saleForms"></div>
-              </div>
-              <div class="col-md-6">
-                <span class="form-label d-block">在庫</span>
-                <div class="pt-1">
-                  <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="s-stock" id="stock-all" value="" checked>
-                    <label class="form-check-label" for="stock-all">指定なし</label>
-                  </div>
-                  <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="s-stock" id="stock-yes" value="あり">
-                    <label class="form-check-label" for="stock-yes">あり</label>
-                  </div>
-                  <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="s-stock" id="stock-no" value="なし">
-                    <label class="form-check-label" for="stock-no">なし</label>
+            <div class="row search-cols">
+              <!-- 左：商品 -->
+              <div class="col-lg-6 search-col">
+                <div class="search-col-title"><i class="bi bi-box"></i>商品</div>
+                <div class="field">
+                  <label class="form-label" for="s-name">商品名<span class="help" data-bs-toggle="tooltip" title="部分一致で検索します">?</span></label>
+                  <input type="text" class="form-control" id="s-name">
+                </div>
+                <div class="field">
+                  <label class="form-label" for="s-jan">JANコード<span class="help" data-bs-toggle="tooltip" title="完全一致で検索します。カンマ区切りで複数指定できます">?</span></label>
+                  <input type="text" class="form-control" id="s-jan" placeholder="4944929005288, 100000000064">
+                </div>
+                <div class="field">
+                  <label class="form-label" for="s-code">商品コード<span class="help" data-bs-toggle="tooltip" title="完全一致で検索します。カンマ区切りで複数指定できます">?</span></label>
+                  <input type="text" class="form-control" id="s-code" placeholder="10000001, 10000002">
+                </div>
+                <div class="field">
+                  <span class="form-label d-block">カテゴリ</span>
+                  <div id="catRows"></div>
+                  <button type="button" class="btn btn-outline-primary btn-add-cat" id="btnAddCat">＋カテゴリ条件を追加</button>
+                </div>
+                <div class="field">
+                  <label class="form-label" for="s-maker">メーカー<span class="help" data-bs-toggle="tooltip" title="部分一致で検索します">?</span></label>
+                  <input type="text" class="form-control" id="s-maker">
+                </div>
+                <div class="field">
+                  <span class="form-label d-block">更新日時</span>
+                  <div class="range">
+                    <input type="datetime-local" class="form-control" id="s-pupd-from" aria-label="更新日時 開始">
+                    <span>～</span>
+                    <input type="datetime-local" class="form-control" id="s-pupd-to" aria-label="更新日時 終了">
                   </div>
                 </div>
               </div>
 
-              <div class="col-md-6">
-                <label class="form-label" for="s-pstatus">公開状態（商品）</label>
-                <select class="form-select" id="s-pstatus" data-master="productStatuses"></select>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label" for="s-honten">本店公開状態</label>
-                <select class="form-select" id="s-honten" data-master="hontenStatuses"></select>
-              </div>
-
-              <div class="col-md-6">
-                <span class="form-label d-block">更新日時（商品）</span>
-                <div class="range">
-                  <input type="datetime-local" class="form-control" id="s-pupd-from" aria-label="更新日時（商品）開始">
-                  <span>～</span>
-                  <input type="datetime-local" class="form-control" id="s-pupd-to" aria-label="更新日時（商品）終了">
+              <!-- 右：商品規格・掲載履歴 -->
+              <div class="col-lg-6 search-col">
+                <div class="search-col-title"><i class="bi bi-grid-3x3-gap"></i>商品規格・掲載履歴</div>
+                <div class="field">
+                  <label class="form-label" for="s-variant-code">商品規格コード<span class="help" data-bs-toggle="tooltip" title="完全一致で検索します。カンマ区切りで複数指定できます">?</span></label>
+                  <input type="text" class="form-control" id="s-variant-code" placeholder="100000000007, 100000000014">
                 </div>
-              </div>
-              <div class="col-md-6">
-                <span class="form-label d-block">更新日時（商品規格）</span>
-                <div class="range">
-                  <input type="datetime-local" class="form-control" id="s-vupd-from" aria-label="更新日時（商品規格）開始">
-                  <span>～</span>
-                  <input type="datetime-local" class="form-control" id="s-vupd-to" aria-label="更新日時（商品規格）終了">
+                <div class="field">
+                  <label class="form-label" for="s-history">掲載履歴コード<span class="help" data-bs-toggle="tooltip" title="完全一致で検索します。カンマ区切りで複数指定できます">?</span></label>
+                  <input type="text" class="form-control" id="s-history" placeholder="500000001, 500000002">
                 </div>
-              </div>
-
-              <div class="col-md-6">
-                <span class="form-label d-block">掲載日時</span>
-                <div class="range">
-                  <input type="datetime-local" class="form-control" id="s-post-from" aria-label="掲載日時 開始">
-                  <span>～</span>
-                  <input type="datetime-local" class="form-control" id="s-post-to" aria-label="掲載日時 終了">
+                <div class="field">
+                  <span class="form-label d-block">ちょっぷル種別</span>
+                  <div class="check-panel chopple-panel" id="s-chopple" role="group" aria-label="ちょっぷル種別"></div>
+                </div>
+                <div class="row g-3 field">
+                  <div class="col-sm-6">
+                    <span class="form-label d-block">販売形態</span>
+                    <div class="check-panel" id="s-saleform" data-master-check="saleForms" role="group" aria-label="販売形態"></div>
+                  </div>
+                  <div class="col-sm-6">
+                    <label class="form-label" for="s-honten">本店公開状態</label>
+                    <select class="form-select" id="s-honten" data-master="hontenStatuses"></select>
+                  </div>
+                  <div class="col-sm-6">
+                    <span class="form-label d-block">規格区分</span>
+                    <div class="check-panel" id="s-spec" data-master-check="specTypes" role="group" aria-label="規格区分"></div>
+                  </div>
+                </div>
+                <div class="field">
+                  <span class="form-label d-block">掲載期間<span class="help" data-bs-toggle="tooltip" title="指定した期間と掲載期間が重なる掲載履歴を検索します">?</span></span>
+                  <div class="range">
+                    <input type="datetime-local" class="form-control" id="s-post-from" aria-label="掲載期間 開始">
+                    <span>～</span>
+                    <input type="datetime-local" class="form-control" id="s-post-to" aria-label="掲載期間 終了">
+                  </div>
+                </div>
+                <div class="field">
+                  <span class="form-label d-block">販売期間<span class="help" data-bs-toggle="tooltip" title="指定した期間と販売期間が重なる掲載履歴を検索します">?</span></span>
+                  <div class="range">
+                    <input type="datetime-local" class="form-control" id="s-sale-from" aria-label="販売期間 開始">
+                    <span>～</span>
+                    <input type="datetime-local" class="form-control" id="s-sale-to" aria-label="販売期間 終了">
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-
       <div class="search-actions">
         <button type="button" class="btn btn-outline-secondary" id="btnClear">条件をクリア</button>
         <button type="submit" class="btn btn-primary btn-search"><i class="bi bi-search me-1"></i>検索</button>
       </div>
     </form>
 
-    <!-- ===== 検索結果 ===== -->
     <section class="card result-card" id="results">
       <div class="card-body">
         <div class="result-head">
@@ -427,20 +193,25 @@ tr.row-hit td:first-child { box-shadow: inset 3px 0 0 var(--primary); }
               <i class="bi bi-grid-3x3-gap"></i>商品規格<span class="tab-count" id="count-variants">0</span>
             </button>
           </li>
+          <li class="nav-item d-none" id="tab-item-histories" role="presentation">
+            <button class="nav-link tab-btn-histories" data-bs-toggle="tab" data-bs-target="#pane-histories" data-tab="histories" type="button" role="tab">
+              <i class="bi bi-clock-history"></i>掲載履歴<span class="tab-count" id="count-histories">0</span>
+            </button>
+          </li>
         </ul>
 
         <div class="tab-content">
           <div class="tab-pane fade show active tab-products" id="pane-products" role="tabpanel" data-tab="products"></div>
           <div class="tab-pane fade tab-attributes" id="pane-attributes" role="tabpanel" data-tab="attributes"></div>
           <div class="tab-pane fade tab-variants" id="pane-variants" role="tabpanel" data-tab="variants"></div>
+          <div class="tab-pane fade tab-histories" id="pane-histories" role="tabpanel" data-tab="histories"></div>
         </div>
       </div>
     </section>
-    </div><!-- /.page-content -->
+    </div>
   </main>
 </div>
 
-<!-- トースト -->
 <div class="toast-container position-fixed bottom-0 end-0 p-3">
   <div id="toast" class="toast align-items-center text-bg-dark border-0" role="status" aria-live="polite">
     <div class="d-flex">
@@ -451,744 +222,7 @@ tr.row-hit td:first-child { box-shadow: inset 3px 0 0 var(--primary); }
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-/**
- * モックデータ
- *  商品 : 商品属性情報 = 1 : 多
- *  商品 : 商品規格     = 1 : 多
- * 固定シードの乱数で生成するので、リロードしても同じデータになります。
- */
-(function () {
-  'use strict';
-
-  // ---- 固定シード乱数 ----
-  function mulberry32(a) {
-    return function () {
-      a |= 0; a = (a + 0x6D2B79F5) | 0;
-      let t = Math.imul(a ^ (a >>> 15), 1 | a);
-      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-    };
-  }
-  const rnd = mulberry32(20260924);
-  const pick = (arr) => arr[Math.floor(rnd() * arr.length)];
-  const randInt = (min, max) => min + Math.floor(rnd() * (max - min + 1));
-  const digits = (n) => Array.from({ length: n }, () => randInt(0, 9)).join('');
-  const randDate = (fromMs, toMs) => Math.floor(fromMs + rnd() * (toMs - fromMs));
-  const DAY = 24 * 60 * 60 * 1000;
-
-  // ---- マスタ ----
-  const MASTER = {
-    businessTypes: ['EC', '卸売', '店舗', '法人'],
-    choppleTypes: [
-      'SEP', '仕入', '仕入（NBプロパー）', '仕入（アウトレット）', '受発注', '受発注（NBプロパー）',
-      '直送MD', '直送MD（NBプロパー）', '直送PF',
-    ],
-    // ちょっぷル種別の選択UI用グループ（left: 左列 / right: 右列）
-    choppleGroups: [
-      { side: 'left', label: '', items: ['SEP'] },
-      { side: 'left', label: '仕入', items: ['仕入', '仕入（NBプロパー）', '仕入（アウトレット）'] },
-      { side: 'left', label: '受発注', items: ['受発注', '受発注（NBプロパー）'] },
-      { side: 'right', label: '直送', items: ['直送MD', '直送MD（NBプロパー）', '直送PF'] },
-    ],
-    specTypes: ['通常', '賞味切迫', '抽選', 'その他'],
-    saleForms: ['ピース', 'ボール', 'ケース'],
-    productStatuses: ['公開', '非公開', '廃止'],
-    hontenStatuses: ['公開', '非公開'],
-    channels: ['本', 'd', 'd払', '地方', 'Y', '博', '生', '社', '会', '楽', '外1'],
-    shops: ['EC-CUBE SHOP', 'EC-CUBE SHOP_tenant_1', 'EC-CUBE SHOP_tenant_2'],
-  };
-
-  const MAKERS = ['井村屋', 'スポミン', 'ハウス食品', 'カルビー', '明治', 'キッコーマン', 'サントリー', 'ニチレイ'];
-  const CLASS1 = ['64cm × 64cm', '32mm × 32mm', 'バニラ', 'チョコ', 'ストロベリー', 'S', 'M', 'L', '1L', '500ml'];
-  const CLASS2 = ['', '', 'バニラ', '64cm × 64cm', '32mm × 32mm', '6個入', '12個入', '赤', '青'];
-  const CATCH = ['期間限定', '数量限定', '送料無料対象', '新商品', 'まとめ買いでお得', '', ''];
-  const REMARKS = ['', '', '', '催事用に作成', '価格改定予定', 'JAN変更対応済み', '旧掲載からの移行', '問合せ多数のため表記修正'];
-
-  const NAMES = [
-    { name: '井村屋つぶ入りおしるこ' },
-    { name: 'スポミンもこもこファイバー　アイボリー', set: true },
-    { name: 'スポミンやわらかスポンジ　イエロー', set: true },
-    { name: 'ショコラスティックBIGパック' },
-    { name: '白きくらげの杏仁風デザート' },
-    { name: 'ウコンの力２本＋顆粒Ｒ' },
-    { name: '彩のジェラートCUBE' },
-    { name: '【SXテスト】' },
-    { name: '【SX】画面レビュー' },
-    { name: '北海道バターせんべい' },
-    { name: '国産りんごジュース 1L' },
-    { name: '有機緑茶ティーバッグ 50P' },
-    { name: '讃岐うどん 3食入' },
-    { name: '天然水 2L×6本', set: true },
-    { name: '黒糖かりんとう' },
-    { name: '鶏だしの素 顆粒' },
-    { name: '濃厚チーズケーキ' },
-    { name: 'ミックスナッツ 徳用' },
-    { name: '炭酸水 レモン 500ml' },
-    { name: 'ふんわり食パン 6枚切' },
-    { name: '手延べそうめん' },
-    { name: '減塩しょうゆ 1L' },
-    { name: '冷凍たこ焼き 20個' },
-    { name: 'キッチンペーパー 4ロール', set: true },
-    { name: '食器用洗剤 詰替' },
-    { name: 'ほうじ茶ラテ スティック' },
-    { name: '博多明太子 切子' },
-    { name: '信州みそ 750g' },
-    { name: '冷凍枝豆 500g' },
-    { name: 'アイスコーヒー 無糖 1L' },
-  ];
-
-  const T_2017 = new Date(2017, 2, 7, 19, 14, 52).getTime();
-  const T_BASE = new Date(2026, 8, 24, 3, 56, 17).getTime(); // 2026/09/24 3:56:17
-  const T_END = new Date(2026, 8, 30, 23, 59, 59).getTime();
-
-  // ---- 商品 ----
-  const products = NAMES.map((n, i) => {
-    const id = i + 1;
-    const createdAt = i < 9 ? T_BASE : randDate(T_2017, T_BASE);
-    const updatedAt = rnd() < 0.3 ? createdAt : randDate(createdAt, T_END);
-    const r = rnd();
-    return {
-      id,
-      code: String(10000000 + id),
-      name: n.name,
-      isSet: !!n.set,
-      jan: rnd() < 0.4 ? String(100000000000 + randInt(1, 999)) : '49' + digits(11),
-      maker: rnd() < 0.35 ? pick(MAKERS) : '',
-      itf: rnd() < 0.25 ? '1' + digits(13) : '',
-      caseQty: pick([0, 1, 6, 12, 15, 24, 30]),
-      ballQty: pick([0, 0, 2, 4, 6]),
-      pieceQty: rnd() < 0.3 ? pick([1, 2, 3, 10]) : null,
-      status: r < 0.7 ? '公開' : r < 0.9 ? '非公開' : '廃止',
-      createdAt,
-      updatedAt,
-    };
-  });
-
-  // ---- 商品属性情報（項目は仮で作成） ----
-  const attributes = [];
-  let attrSeq = 1;
-  products.forEach((p) => {
-    const n = randInt(1, 3);
-    for (let k = 0; k < n; k++) {
-      const createdAt = randDate(p.createdAt, T_END);
-      const postedAt = randDate(createdAt, T_END);
-      const r = rnd();
-      const attrNo = String(k + 1).padStart(3, '0'); // 属性番号（3桁）
-      attributes.push({
-        id: attrSeq,
-        productId: p.id,
-        productCode: p.code,
-        productName: p.name,
-        attrNo,
-        attrCode: p.code + attrNo, // 商品属性コード = 商品コード(8桁) + 属性番号(3桁)
-        historyCode: 'PH' + String(attrSeq).padStart(7, '0'),
-        shop: pick(MASTER.shops),
-        businessType: pick(MASTER.businessTypes),
-        displayName: p.name + (rnd() < 0.4 ? '【' + pick(['ギフト', 'お徳用', '業務用']) + '】' : ''),
-        catchCopy: pick(CATCH),
-        price: randInt(10, 500) * 10,
-        taxRate: pick(['8%', '8%', '10%']),
-        postedAt,
-        postEndAt: rnd() < 0.5 ? postedAt + randInt(7, 120) * DAY : null,
-        status: r < 0.7 ? '公開' : '非公開',
-        remarks: pick(REMARKS),
-        createdAt,
-        updatedAt: randDate(postedAt, T_END),
-      });
-      attrSeq++;
-    }
-  });
-
-  // ---- 商品規格 ----
-  const variants = [];
-  let varSeq = 1;
-  products.forEach((p) => {
-    const n = randInt(1, 4);
-    for (let k = 0; k < n; k++) {
-      const shop = pick(MASTER.shops);
-      const publish = {};
-      MASTER.channels.forEach((ch) => { publish[ch] = rnd() < 0.75; });
-      variants.push({
-        id: varSeq,
-        productId: p.id,
-        productCode: p.code,
-        productName: p.name,
-        code: shop === 'EC-CUBE SHOP' || rnd() < 0.6 ? String(100000000000 + varSeq * 7) : '',
-        shop,
-        choppleType: rnd() < 0.7 ? pick(MASTER.choppleTypes) : '',
-        specType: pick(MASTER.specTypes),
-        class1: rnd() < 0.85 ? pick(CLASS1) : '',
-        class2: pick(CLASS2),
-        saleForm: pick(MASTER.saleForms),
-        saleQty: randInt(0, 30),
-        salePieceQty: randInt(0, 60),
-        stock: rnd() < 0.35 ? 0 : randInt(1, 500),
-        updatedAt: randDate(p.createdAt, T_END),
-        publish,
-        groupId: rnd() < 0.4 ? randInt(1, 20) : null,
-        price: randInt(10, 500) * 10,
-      });
-      varSeq++;
-    }
-  });
-
-  window.MOCK_DATA = { MASTER, products, attributes, variants };
-})();
-
-</script>
-<script>
-/**
- * 商品横断検索 モック
- *
- * 検索の考え方
- *  1. 検索条件を「商品」「商品属性情報」「商品規格」のどれにかかる条件かで振り分ける
- *  2. 次の3つをすべて満たす商品をヒットとする
- *     - 商品の条件を満たす
- *     - 属性の条件がある場合、条件を満たす属性を1件以上持つ
- *     - 規格の条件がある場合、条件を満たす規格を1件以上持つ
- *  3. ヒットした商品に紐づく属性・規格を各タブに表示する
- *     （条件に直接一致した行には「一致」バッジを付ける）
- */
-(function () {
-  'use strict';
-
-  const { MASTER, products, attributes, variants } = window.MOCK_DATA;
-
-  const TAB_LABEL = { products: '商品', attributes: '商品属性情報', variants: '商品規格' };
-
-  const state = {
-    cond: {},
-    hasCond: { attributes: false, variants: false },
-    results: { products: [], attributes: [], variants: [] },
-    linkCount: { attributes: new Map(), variants: new Map() },
-    focusProductId: null,
-    perPage: 20,
-    page: { products: 1, attributes: 1, variants: 1 },
-    sort: {
-      products: { key: 'code', dir: 'asc' },
-      attributes: { key: 'attrCode', dir: 'asc' },
-      variants: { key: 'productCode', dir: 'asc' },
-    },
-    checked: { products: new Set(), attributes: new Set(), variants: new Set() },
-  };
-
-  // ============================================================
-  // ユーティリティ
-  // ============================================================
-  const $ = (sel, root = document) => root.querySelector(sel);
-  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
-  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => (
-    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const pad = (n) => String(n).padStart(2, '0');
-  const fmtDate = (ms) => {
-    if (!ms) return '';
-    const d = new Date(ms);
-    return `${d.getFullYear()}/${pad(d.getMonth() + 1)}/${pad(d.getDate())}<br>` +
-           `${d.getHours()}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
-  };
-  const yen = (n) => (n == null ? '' : '¥' + n.toLocaleString());
-  const like = (val, q) => !q || String(val ?? '').toLowerCase().includes(q.toLowerCase());
-  // カンマ区切り（, 、 空白）で複数指定 → いずれかに部分一致すればOK
-  const likeAny = (val, q) => {
-    if (!q) return true;
-    const terms = q.split(/[,、，\s]+/).filter(Boolean);
-    return terms.length === 0 || terms.some((t) => like(val, t));
-  };
-  const inRange = (ms, from, to) => {
-    if (from && ms < new Date(from).getTime()) return false;
-    if (to && ms > new Date(to).getTime()) return false;
-    return true;
-  };
-  const groupBy = (arr, key) => arr.reduce((m, x) => {
-    if (!m.has(x[key])) m.set(x[key], []);
-    m.get(x[key]).push(x);
-    return m;
-  }, new Map());
-
-  const attrsByProduct = groupBy(attributes, 'productId');
-  const variantsByProduct = groupBy(variants, 'productId');
-  const productById = new Map(products.map((p) => [p.id, p]));
-
-  // ============================================================
-  // 検索条件
-  // ============================================================
-  // 各条件がどのデータにかかるか（条件表示にも使う）
-  const COND_DEFS = [
-    { key: 'productName', id: 's-name',         label: '商品名',           scope: 'products' },
-    { key: 'productCode', id: 's-code',         label: '商品コード',       scope: 'products' },
-    { key: 'jan',         id: 's-jan',          label: 'JANコード',        scope: 'products' },
-    { key: 'productStatus', id: 's-pstatus',    label: '公開状態（商品）', scope: 'products' },
-    { key: 'pUpdFrom',    id: 's-pupd-from',    label: '更新日時（商品）から', scope: 'products' },
-    { key: 'pUpdTo',      id: 's-pupd-to',      label: '更新日時（商品）まで', scope: 'products' },
-    { key: 'historyCode', id: 's-history',      label: '掲載履歴コード',   scope: 'attributes' },
-    { key: 'businessType', id: 's-business',    label: '業態区分',         scope: 'attributes' },
-    { key: 'postFrom',    id: 's-post-from',    label: '掲載日時から',     scope: 'attributes' },
-    { key: 'postTo',      id: 's-post-to',      label: '掲載日時まで',     scope: 'attributes' },
-    { key: 'variantCode', id: 's-variant-code', label: '商品規格コード',   scope: 'variants' },
-    { key: 'choppleType', id: 's-chopple',      label: 'ちょっぷル種別',   scope: 'variants', multi: true },
-    { key: 'specType',    id: 's-spec',         label: '規格区分',         scope: 'variants', multi: true },
-    { key: 'saleForm',    id: 's-saleform',     label: '販売形態',         scope: 'variants', multi: true },
-    { key: 'stock',       id: null,             label: '在庫',             scope: 'variants' },
-    { key: 'hontenStatus', id: 's-honten',      label: '本店公開状態',     scope: 'variants' },
-    { key: 'vUpdFrom',    id: 's-vupd-from',    label: '更新日時（規格）から', scope: 'variants' },
-    { key: 'vUpdTo',      id: 's-vupd-to',      label: '更新日時（規格）まで', scope: 'variants' },
-  ];
-
-  function readConditions() {
-    const c = {};
-    COND_DEFS.forEach((d) => {
-      if (d.multi) c[d.key] = $$(`#${d.id} input:checked`).map((i) => i.value);
-      else c[d.key] = d.id ? $('#' + d.id).value.trim() : '';
-    });
-    c.stock = $('input[name="s-stock"]:checked').value;
-    return c;
-  }
-
-  const filled = (v) => (Array.isArray(v) ? v.length > 0 : !!v);
-  const inList = (val, list) => !list.length || list.includes(val);
-  const hasScopeCond = (c, scope) => COND_DEFS.some((d) => d.scope === scope && filled(c[d.key]));
-
-  function matchProduct(p, c) {
-    return like(p.name, c.productName)
-      && likeAny(p.code, c.productCode)
-      && likeAny(p.jan, c.jan)
-      && (!c.productStatus || p.status === c.productStatus)
-      && inRange(p.updatedAt, c.pUpdFrom, c.pUpdTo);
-  }
-
-  function matchAttribute(a, c) {
-    return likeAny(a.historyCode, c.historyCode)
-      && (!c.businessType || a.businessType === c.businessType)
-      && inRange(a.postedAt, c.postFrom, c.postTo);
-  }
-
-  function matchVariant(v, c) {
-    const stockOk = c.stock === 'あり' ? v.stock > 0 : c.stock === 'なし' ? v.stock === 0 : true;
-    const hontenOk = c.hontenStatus === '公開' ? v.publish['本']
-      : c.hontenStatus === '非公開' ? !v.publish['本'] : true;
-    return likeAny(v.code, c.variantCode)
-      && inList(v.choppleType, c.choppleType)
-      && inList(v.specType, c.specType)
-      && inList(v.saleForm, c.saleForm)
-      && stockOk && hontenOk
-      && inRange(v.updatedAt, c.vUpdFrom, c.vUpdTo);
-  }
-
-  function runSearch() {
-    const c = state.cond;
-    const useAttr = hasScopeCond(c, 'attributes');
-    const useVar = hasScopeCond(c, 'variants');
-    state.hasCond = { attributes: useAttr, variants: useVar };
-
-    const hitProducts = products.filter((p) => {
-      if (!matchProduct(p, c)) return false;
-      if (useAttr && !(attrsByProduct.get(p.id) || []).some((a) => matchAttribute(a, c))) return false;
-      if (useVar && !(variantsByProduct.get(p.id) || []).some((v) => matchVariant(v, c))) return false;
-      return true;
-    });
-    const ids = new Set(hitProducts.map((p) => p.id));
-
-    state.results.products = hitProducts;
-    state.results.attributes = attributes
-      .filter((a) => ids.has(a.productId))
-      .map((a) => ({ ...a, _hit: useAttr && matchAttribute(a, c) }));
-    state.results.variants = variants
-      .filter((v) => ids.has(v.productId))
-      .map((v) => ({ ...v, _hit: useVar && matchVariant(v, c) }));
-
-    // 商品ごとの紐づき件数
-    ['attributes', 'variants'].forEach((t) => {
-      const m = new Map();
-      state.results[t].forEach((r) => {
-        m.set(r.productId, (m.get(r.productId) || 0) + 1);
-      });
-      state.linkCount[t] = m;
-    });
-  }
-
-  // ============================================================
-  // 一覧の列定義
-  // ============================================================
-  const imgCell = () => '<div class="thumb"><i class="bi bi-image"></i></div>';
-  const productLink = (r) =>
-    `<a href="#" class="js-focus" data-pid="${r.productId ?? r.id}" title="この商品に紐づく情報で絞り込む">${esc(r.productName ?? r.name)}</a>`;
-  const hitBadge = (r) => (r._hit ? '<span class="badge-hit">一致</span>' : '');
-  const statusBadge = (s) => `<span class="status status-${esc(s)}">${esc(s)}</span>`;
-  const pubGrid = (pub) => '<div class="pub-grid">' + MASTER.channels.map((ch) =>
-    `<span>${esc(ch)} <span class="${pub[ch] ? 'on' : 'off'}" title="${pub[ch] ? '公開' : '非公開'}">${pub[ch] ? '◯' : '－'}</span></span>`
-  ).join('') + '</div>';
-  const eyeBtn = (label) =>
-    `<button type="button" class="icon-btn js-mock" data-msg="${esc(label)}の詳細画面へ遷移します（モック）" aria-label="詳細"><i class="bi bi-eye"></i></button>`;
-
-  const COLUMNS = {
-    products: [
-      { key: 'code', label: '商品コード', sort: true, cls: 'nowrap',
-        render: (p) => (p.isSet ? '<span class="badge-set">セット品</span><br>' : '') + esc(p.code) },
-      { key: '_img', label: '画像', render: imgCell },
-      { key: 'name', label: '商品名', sort: true, cls: 'col-name', render: productLink },
-      { key: 'jan', label: 'JANコード', sort: true },
-      { key: 'maker', label: 'メーカー', cls: 'col-narrow' },
-      { key: 'itf', label: 'ITFコード', cls: 'col-narrow' },
-      { key: 'caseQty', label: 'ケース入数', sort: true },
-      { key: 'ballQty', label: 'ボール入数', sort: true },
-      { key: 'pieceQty', label: 'ピース数', sort: true },
-      { key: 'createdAt', label: '登録日時', sort: true, cls: 'nowrap', render: (p) => fmtDate(p.createdAt) },
-      { key: 'updatedAt', label: '更新日時', sort: true, cls: 'nowrap', render: (p) => fmtDate(p.updatedAt) },
-      { key: '_links', label: '紐づき', render: (p) => {
-          const a = state.linkCount.attributes.get(p.id) || 0;
-          const v = state.linkCount.variants.get(p.id) || 0;
-          return `<div class="link-btns">
-            <button type="button" class="btn btn-outline-secondary js-goto" data-pid="${p.id}" data-goto="attributes">属性 ${a}件</button>
-            <button type="button" class="btn btn-outline-secondary js-goto" data-pid="${p.id}" data-goto="variants">規格 ${v}件</button>
-          </div>`;
-        } },
-      { key: '_actions', label: '', render: (p) => `<div class="actions">
-          <button type="button" class="btn btn-primary btn-receive js-mock" data-msg="入庫登録画面へ遷移します（モック）">入庫登録</button>
-          ${eyeBtn('商品')}
-          <button type="button" class="icon-btn js-mock" data-msg="商品「${esc(p.name)}」を複製します（モック）" aria-label="複製"><i class="bi bi-copy"></i></button>
-        </div>` },
-    ],
-
-    // ※ 商品属性情報の項目は仮
-    attributes: [
-      { key: 'attrCode', label: '商品属性コード', sort: true, cls: 'nowrap', render: (a) => esc(a.attrCode) + hitBadge(a) },
-      { key: 'attrNo', label: '属性番号', sort: true },
-      { key: 'historyCode', label: '掲載履歴コード', sort: true, cls: 'nowrap' },
-      { key: 'productCode', label: '商品コード', sort: true },
-      { key: 'productName', label: '商品名', sort: true, cls: 'col-name', render: productLink },
-      { key: 'shop', label: '店舗', sort: true },
-      { key: 'businessType', label: '業態区分', sort: true },
-      { key: 'displayName', label: '表示商品名', cls: 'col-name' },
-      { key: 'catchCopy', label: 'キャッチコピー' },
-      { key: 'price', label: '販売価格', sort: true, cls: 'nowrap', render: (a) => yen(a.price) },
-      { key: 'taxRate', label: '税率' },
-      { key: 'postedAt', label: '掲載日時', sort: true, cls: 'nowrap', render: (a) => fmtDate(a.postedAt) },
-      { key: 'postEndAt', label: '掲載終了日時', sort: true, cls: 'nowrap', render: (a) => fmtDate(a.postEndAt) || '－' },
-      { key: 'status', label: '公開状態', sort: true, render: (a) => statusBadge(a.status) },
-      { key: 'remarks', label: '備考', cls: 'col-remarks' },
-      { key: 'createdAt', label: '作成日時', sort: true, cls: 'nowrap', render: (a) => fmtDate(a.createdAt) },
-      { key: 'updatedAt', label: '更新日時', sort: true, cls: 'nowrap', render: (a) => fmtDate(a.updatedAt) },
-      { key: '_actions', label: '', render: () => eyeBtn('商品属性情報') },
-    ],
-
-    variants: [
-      { key: 'code', label: '商品規格コード', sort: true, cls: 'nowrap',
-        render: (v) => (v.code ? `<a href="#" class="js-mock" data-msg="商品規格の編集画面へ遷移します（モック）">${esc(v.code)}</a>` : '') + hitBadge(v) },
-      { key: '_img', label: '画像', render: imgCell },
-      { key: 'shop', label: '店舗', sort: true },
-      { key: 'productName', label: '商品名', sort: true, cls: 'col-name', render: productLink },
-      { key: 'choppleType', label: 'ちょっぷル種別', sort: true },
-      { key: 'specType', label: '規格区分', sort: true },
-      { key: 'class1', label: '規格分類1', sort: true },
-      { key: 'class2', label: '規格分類2', sort: true },
-      { key: 'saleForm', label: '販売形態', sort: true },
-      { key: 'saleQty', label: '販売数', sort: true },
-      { key: 'salePieceQty', label: '販売ピース数', sort: true },
-      { key: 'stock', label: '在庫数', sort: true },
-      { key: 'updatedAt', label: '更新日時', sort: true, cls: 'nowrap', render: (v) => fmtDate(v.updatedAt) },
-      { key: 'publish', label: '公開状態', render: (v) => pubGrid(v.publish) },
-      { key: 'groupId', label: '規格グループID', sort: true },
-      { key: 'price', label: '販売価格', sort: true, cls: 'nowrap', render: (v) => yen(v.price) },
-    ],
-  };
-
-  // ============================================================
-  // 描画
-  // ============================================================
-  function visibleRows(tab) {
-    let rows = state.results[tab];
-    if (state.focusProductId != null) {
-      rows = rows.filter((r) => (tab === 'products' ? r.id : r.productId) === state.focusProductId);
-    }
-    const { key, dir } = state.sort[tab];
-    const mul = dir === 'asc' ? 1 : -1;
-    return [...rows].sort((a, b) => {
-      const x = a[key], y = b[key];
-      if (x === y) return 0;
-      if (x == null || x === '') return 1;   // 空は常に末尾
-      if (y == null || y === '') return -1;
-      return (typeof x === 'number' && typeof y === 'number'
-        ? x - y : String(x).localeCompare(String(y), 'ja', { numeric: true })) * mul;
-    });
-  }
-
-  function pagerHtml(tab, pages) {
-    const cur = state.page[tab];
-    if (pages <= 1) return '';
-    const item = (p, text, active = false) =>
-      `<li class="page-item${active ? ' active' : ''}"><a class="page-link" href="#" data-page="${p}">${text}</a></li>`;
-    let start = Math.max(1, cur - 2);
-    const end = Math.min(pages, start + 4);
-    start = Math.max(1, end - 4);
-    let html = '<ul class="pagination">';
-    if (cur > 1) html += item(1, '最初へ') + item(cur - 1, '前へ');
-    if (start > 1) html += '<li class="ellipsis">…</li>';
-    for (let p = start; p <= end; p++) html += item(p, p, p === cur);
-    if (end < pages) html += '<li class="ellipsis">…</li>';
-    if (cur < pages) html += item(cur + 1, '次へ') + item(pages, '最後へ');
-    return html + '</ul>';
-  }
-
-  function renderTab(tab) {
-    const pane = $(`#pane-${tab}`);
-    const cols = COLUMNS[tab];
-    const rows = visibleRows(tab);
-    const total = rows.length;
-    const pages = Math.max(1, Math.ceil(total / state.perPage));
-    if (state.page[tab] > pages) state.page[tab] = pages;
-    const start = (state.page[tab] - 1) * state.perPage;
-    const pageRows = rows.slice(start, start + state.perPage);
-    const checked = state.checked[tab];
-    const allChecked = pageRows.length > 0 && pageRows.every((r) => checked.has(r.id));
-    const { key: sKey, dir: sDir } = state.sort[tab];
-
-    const thead = '<tr>' +
-      `<th><input type="checkbox" class="form-check-input js-check-all" aria-label="このページをすべて選択"${allChecked ? ' checked' : ''}></th>` +
-      cols.map((c) => {
-        if (!c.sort) return `<th>${c.label}</th>`;
-        const active = c.key === sKey;
-        const ico = active && sDir === 'desc' ? 'bi-arrow-down' : 'bi-arrow-up';
-        return `<th class="sortable" data-sort="${c.key}">${c.label}<i class="bi ${ico} sort-ico${active ? ' active' : ''}"></i></th>`;
-      }).join('') + '</tr>';
-
-    const tbody = pageRows.length
-      ? pageRows.map((r) => `<tr class="${r._hit ? 'row-hit' : ''}">` +
-          `<td><input type="checkbox" class="form-check-input js-check" data-id="${r.id}" aria-label="選択"${checked.has(r.id) ? ' checked' : ''}></td>` +
-          cols.map((c) => `<td class="${c.cls || ''}">${c.render ? c.render(r) : esc(r[c.key])}</td>`).join('') +
-        '</tr>').join('')
-      : `<tr><td colspan="${cols.length + 1}" class="empty">条件に一致する${TAB_LABEL[tab]}はありません。検索条件を変えて検索してください。</td></tr>`;
-
-    const info = total
-      ? `全 ${total} 件中 ${start + 1}〜${Math.min(start + state.perPage, total)} 件を表示` +
-        (checked.size ? `（${checked.size} 件選択中）` : '')
-      : '0 件';
-
-    pane.innerHTML = `
-      <div class="pane-top">
-        <div class="pane-info">${info}</div>
-        <nav class="pager" aria-label="ページ送り">${pagerHtml(tab, pages)}</nav>
-        <div class="pane-info" style="visibility:hidden">${info}</div>
-      </div>
-      <div class="table-wrap">
-        <table class="table-x"><thead>${thead}</thead><tbody>${tbody}</tbody></table>
-      </div>`;
-
-    $(`#count-${tab}`).textContent = total;
-  }
-
-  function renderSummary() {
-    const r = state.results;
-    $('#resultSummary').innerHTML =
-      `検索結果：商品<span class="num">${r.products.length}</span>件 ／ ` +
-      `商品属性情報<span class="num">${r.attributes.length}</span>件 ／ ` +
-      `商品規格<span class="num">${r.variants.length}</span>件`;
-
-    const chips = COND_DEFS
-      .filter((d) => filled(state.cond[d.key]))
-      .map((d) => {
-        let v = state.cond[d.key];
-        if (Array.isArray(v)) v = v.join('、');
-        if (/From|To$/.test(d.key)) v = v.replace('T', ' ').replace(/-/g, '/');
-        return `<span class="cond-chip"><span class="scope">[${TAB_LABEL[d.scope]}]</span>${esc(d.label)}：${esc(v)}</span>`;
-      });
-    $('#condList').innerHTML = chips.length ? chips.join('') : '<span class="cond-chip">条件なし（全件）</span>';
-
-    const bar = $('#focusBar');
-    if (state.focusProductId != null) {
-      const p = productById.get(state.focusProductId);
-      bar.hidden = false;
-      bar.innerHTML = `<i class="bi bi-funnel"></i>
-        商品 <strong>${esc(p.code)}</strong>「${esc(p.name)}」に紐づく情報だけを表示しています
-        <button type="button" class="btn btn-sm btn-outline-primary ms-auto js-unfocus">絞り込みを解除</button>`;
-    } else {
-      bar.hidden = true;
-      bar.innerHTML = '';
-    }
-  }
-
-  function renderAll() {
-    renderSummary();
-    ['products', 'attributes', 'variants'].forEach(renderTab);
-  }
-
-  // ============================================================
-  // 操作
-  // ============================================================
-  function doSearch() {
-    state.cond = readConditions();
-    state.focusProductId = null;
-    state.page = { products: 1, attributes: 1, variants: 1 };
-    Object.values(state.checked).forEach((s) => s.clear());
-    runSearch();
-    renderAll();
-  }
-
-  function setFocus(pid) {
-    state.focusProductId = pid;
-    state.page = { products: 1, attributes: 1, variants: 1 };
-    renderAll();
-  }
-
-  function showTab(tab) {
-    bootstrap.Tab.getOrCreateInstance($(`[data-tab="${tab}"].nav-link`)).show();
-  }
-
-  function toast(msg) {
-    $('#toastBody').textContent = msg;
-    bootstrap.Toast.getOrCreateInstance($('#toast'), { delay: 2200 }).show();
-  }
-
-  function bindEvents() {
-    $('#searchForm').addEventListener('submit', (e) => {
-      e.preventDefault();
-      doSearch();
-      $('#results').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-
-    $('#btnClear').addEventListener('click', () => {
-      $('#searchForm').reset();
-      $$('.ms').forEach(updateMultiLabel);
-      doSearch();
-    });
-
-    // 複数選択ドロップダウン
-    $('#searchForm').addEventListener('change', (e) => {
-      const ms = e.target.closest('.ms');
-      if (ms) updateMultiLabel(ms);
-    });
-    $('#searchForm').addEventListener('click', (e) => {
-      const clear = e.target.closest('.ms-clear');
-      if (!clear) return;
-      const ms = clear.closest('.ms');
-      $$('input', ms).forEach((i) => { i.checked = false; });
-      updateMultiLabel(ms);
-    });
-
-    $('#perPage').addEventListener('change', (e) => {
-      state.perPage = Number(e.target.value);
-      state.page = { products: 1, attributes: 1, variants: 1 };
-      renderAll();
-    });
-
-    // 結果エリアのクリックはまとめて委譲
-    $('#results').addEventListener('click', (e) => {
-      const pane = e.target.closest('.tab-pane');
-      const tab = pane && pane.dataset.tab;
-
-      const sortTh = e.target.closest('th[data-sort]');
-      if (sortTh && tab) {
-        const s = state.sort[tab];
-        if (s.key === sortTh.dataset.sort) s.dir = s.dir === 'asc' ? 'desc' : 'asc';
-        else { s.key = sortTh.dataset.sort; s.dir = 'asc'; }
-        renderTab(tab);
-        return;
-      }
-
-      const pageLink = e.target.closest('[data-page]');
-      if (pageLink && tab) {
-        e.preventDefault();
-        state.page[tab] = Number(pageLink.dataset.page);
-        renderTab(tab);
-        return;
-      }
-
-      const focus = e.target.closest('.js-focus');
-      if (focus) {
-        e.preventDefault();
-        setFocus(Number(focus.dataset.pid));
-        return;
-      }
-
-      const go = e.target.closest('.js-goto');
-      if (go) {
-        setFocus(Number(go.dataset.pid));
-        showTab(go.dataset.goto);
-        return;
-      }
-
-      if (e.target.closest('.js-unfocus')) {
-        setFocus(null);
-        return;
-      }
-
-      const mock = e.target.closest('.js-mock');
-      if (mock) {
-        e.preventDefault();
-        toast(mock.dataset.msg);
-      }
-    });
-
-    $('#results').addEventListener('change', (e) => {
-      const pane = e.target.closest('.tab-pane');
-      if (!pane) return;
-      const tab = pane.dataset.tab;
-      const set = state.checked[tab];
-      if (e.target.classList.contains('js-check')) {
-        const id = Number(e.target.dataset.id);
-        e.target.checked ? set.add(id) : set.delete(id);
-        renderTab(tab);
-      } else if (e.target.classList.contains('js-check-all')) {
-        $$('.js-check', pane).forEach((cb) => {
-          const id = Number(cb.dataset.id);
-          e.target.checked ? set.add(id) : set.delete(id);
-        });
-        renderTab(tab);
-      }
-    });
-  }
-
-  // ============================================================
-  // 初期化
-  // ============================================================
-  function initSelects() {
-    $$('select[data-master]').forEach((sel) => {
-      const opts = MASTER[sel.dataset.master] || [];
-      sel.innerHTML = '<option value="">選択してください</option>' +
-        opts.map((o) => `<option value="${esc(o)}">${esc(o)}</option>`).join('');
-    });
-  }
-
-  // 複数選択ドロップダウンの生成
-  function initMultiSelects() {
-    const item = (v) =>
-      `<label class="ms-item"><input type="checkbox" class="form-check-input" value="${esc(v)}">${esc(v)}</label>`;
-    $$('.ms[data-master]').forEach((el) => {
-      const key = el.dataset.master;
-      const groups = key === 'choppleTypes' ? MASTER.choppleGroups : null;
-      let body;
-      if (groups) {
-        const col = (side) => '<div class="ms-col">' + groups.filter((g) => g.side === side).map((g) =>
-          `<div class="ms-group">${g.label ? `<div class="ms-group-label">${esc(g.label)}</div>` : ''}${g.items.map(item).join('')}</div>`
-        ).join('') + '</div>';
-        body = `<div class="ms-cols">${col('left')}${col('right')}</div>`;
-      } else {
-        body = MASTER[key].map(item).join('');
-      }
-      el.innerHTML =
-        `<button type="button" class="form-select ms-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">` +
-        `<span class="ms-text">選択してください</span></button>` +
-        `<div class="dropdown-menu ms-menu${groups ? ' ms-wide' : ''}">${body}` +
-        `<div class="ms-foot"><button type="button" class="btn btn-link p-0 ms-clear">選択をクリア</button></div></div>`;
-    });
-  }
-
-  function updateMultiLabel(el) {
-    const vals = $$('input:checked', el).map((i) => i.value);
-    $('.ms-text', el).textContent = !vals.length ? '選択してください'
-      : vals.length <= 3 ? vals.join('、')
-      : `${vals.slice(0, 2).join('、')} 他${vals.length - 2}件`;
-  }
-
-  document.addEventListener('DOMContentLoaded', () => {
-    initSelects();
-    initMultiSelects();
-    $$('[data-bs-toggle="tooltip"]').forEach((el) => new bootstrap.Tooltip(el));
-    bindEvents();
-    doSearch(); // 初期表示は全件
-  });
-})();
-
-</script>
+<script src="data.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
