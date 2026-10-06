@@ -89,7 +89,6 @@ a:hover { text-decoration: underline; }
 .result-tabs .tab-btn-products.active   { border-bottom-color: #6f9bd6; }
 .result-tabs .tab-btn-attributes.active { border-bottom-color: #d9a85a; }
 .result-tabs .tab-btn-variants.active   { border-bottom-color: #5fb88f; }
-.result-tabs .tab-btn-histories.active  { border-bottom-color: #9a82c9; }
 .tab-count { background: #e7ebf0; color: #333; border-radius: 10px; font-size: 12px; padding: 0 8px; font-weight: 500; }
 .pane-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding: 14px 0 10px; }
 .pane-info { font-size: 13px; color: var(--muted); }
@@ -107,7 +106,22 @@ a:hover { text-decoration: underline; }
 .tab-products   thead th { background: var(--hdr-products); }
 .tab-attributes thead th { background: var(--hdr-attributes); }
 .tab-variants   thead th { background: var(--hdr-variants); }
-.tab-histories  thead th { background: var(--hdr-histories); }
+.table-x.table-hist thead th { background: var(--hdr-histories); }
+/* 商品規格の下に開く掲載履歴 */
+.col-toggle { width: 44px; padding-right: 0 !important; }
+.acc-btn { display: inline-flex; align-items: center; gap: 4px; background: #fff; border: 1px solid #c9d1db; border-radius: 4px; color: #444; font-size: 12px; padding: 3px 6px; line-height: 1; }
+.acc-btn:hover { border-color: var(--primary); color: var(--primary); }
+.acc-btn .bi { font-size: 12px; -webkit-text-stroke: .6px; transition: transform .15s; }
+.acc-btn.open { background: var(--hdr-histories); border-color: #b7a6dc; }
+.acc-btn.open .bi { transform: rotate(90deg); }
+.toggle-count { font-weight: 700; }
+tr.row-open > td { background: #f7f5fc; border-bottom-color: transparent; }
+tr.hist-row > td { padding: 0 8px 14px 52px; background: #f7f5fc; }
+.hist-nested { background: #fff; border: 1px solid #ddd3ef; border-left: 3px solid #9a82c9; border-radius: 4px; padding: 8px 10px 4px; }
+.hist-nested-title { font-size: 12px; font-weight: 700; color: #5b4a86; display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+.table-x.table-hist { font-size: 12px; }
+.table-x.table-hist th, .table-x.table-hist td { padding: 7px 8px; }
+.table-x.table-hist tbody tr:last-child td { border-bottom: none; }
 .table-x th.sortable { cursor: pointer; user-select: none; }
 .table-x th .sort-ico { color: #7a8594; font-size: 12px; margin-left: 2px; }
 .table-x th .sort-ico.active { color: #111; }

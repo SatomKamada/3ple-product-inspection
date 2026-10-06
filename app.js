@@ -1,17 +1,18 @@
 (function () {
   'use strict';
   const { MASTER, products, attributes, histories, variants } = window.MOCK_DATA;
-  const TABS = ['products', 'attributes', 'variants', 'histories'];
+  const TABS = ['products', 'attributes', 'variants'];
   const TAB_LABEL = { products: '商品', attributes: '商品属性情報', variants: '商品規格', histories: '掲載履歴' };
-  const resetPages = () => ({ products: 1, attributes: 1, variants: 1, histories: 1 });
+  const resetPages = () => ({ products: 1, attributes: 1, variants: 1 });
   const state = {
     cond: {}, hasCond: { attributes: false, histories: false, variants: false },
     histSearched: false, // 掲載履歴の条件が入ったときだけ掲載履歴テーブルを検索する
     results: { products: [], attributes: [], histories: [], variants: [] },
     linkCount: { attributes: new Map(), histories: new Map(), variants: new Map() },
-    focusProductId: null, focusVariantId: null,
+    focusProductId: null,
+    expanded: new Set(), // 掲載履歴を開いている商品規格ID
     perPage: 20, page: resetPages(),
-    sort: { products: { key: 'code', dir: 'asc' }, attributes: { key: 'code', dir: 'asc' }, histories: { key: 'historyCode', dir: 'asc' }, variants: { key: 'code', dir: 'asc' } },
+    sort: { products: { key: 'code', dir: 'asc' }, attributes: { key: 'code', dir: 'asc' }, variants: { key: 'code', dir: 'asc' } },
   };
 
   const $ = (sel, root = document) => root.querySelector(sel);
@@ -50,7 +51,6 @@
     return m;
   }, new Map());
 
-  const histByProduct = groupBy(histories, 'productId');
   const histByVariant = groupBy(histories, 'variantId');
   const variantsByProduct = groupBy(variants, 'productId');
   const productById = new Map(products.map((p) => [p.id, p]));
@@ -68,7 +68,7 @@
     { key: 'historyCode', id: 's-history', label: '掲載履歴コード', scope: 'histories' },
     { key: 'choppleType', id: 's-chopple', label: 'ちょっぷル種別', scope: 'variants', multi: true },
     { key: 'saleForm', id: 's-saleform', label: '販売形態', scope: 'variants', multi: true },
-    { key: 'hontenStatus', id: 's-honten', label: '本店公開状態', scope: 'variants' },
+    { key: 'hontenStatus', id: 's-honten', label: '本店公開状態', scope: 'variants', multi: true },
     { key: 'specType', id: 's-spec', label: '規格区分', scope: 'variants', multi: true },
     { key: 'postFrom', id: 's-post-from', label: '掲載期間から', scope: 'histories' },
     { key: 'postTo', id: 's-post-to', label: '掲載期間まで', scope: 'histories' },
@@ -136,7 +136,7 @@
     return exactAny(h.historyCode, c.historyCode) && overlaps(h.postFrom, h.postTo, c.postFrom, c.postTo) && overlaps(h.saleFrom, h.saleTo, c.saleFrom, c.saleTo);
   }
   function matchVariant(v, c) {
-    const hontenOk = c.hontenStatus === '公開' ? v.publish['本'] : c.hontenStatus === '非公開' ? !v.publish['本'] : true;
+    const hontenOk = anyOf(v.publish['本'] ? '公開' : '非公開', c.hontenStatus);
     return exactAny(v.code, c.variantCode) && anyOf(v.choppleType, c.choppleType) && anyOf(v.specType, c.specType) && anyOf(v.saleForm, c.saleForm) && hontenOk;
   }
 
@@ -215,7 +215,7 @@
       { key: '_actions', label: '', render: () => eyeBtn('商品') },
     ],
     attributes: [
-      { key: 'code', label: '商品属性コード', sort: true, cls: 'nowrap' },
+      { key: 'code', label: '商品属性コード', sort: true, cls: 'nowrap', render: (a) => `<a href="#" class="js-mock" data-msg="商品属性の詳細画面へ">${esc(a.code)}</a>` },
       { key: 'attrNo', label: '商品属性番号', sort: true },
       { key: 'isDefault', label: 'デフォルトフラグ', sort: true, render: (a) => flag(a.isDefault) },
       { key: 'origin', label: '原産国・産地', sort: true, cls: 'nowrap' },
@@ -230,6 +230,11 @@
       { key: '_links', label: '紐づき', render: (a) => `<div class="link-btns">${goProductBtn(a.productId)}</div>` },
     ],
     variants: [
+      { key: '_toggle', label: '', cls: 'col-toggle', render: (v) => {
+          const open = state.expanded.has(v.id);
+          const n = state.histSearched ? `<span class="toggle-count">${state.linkCount.histories.get(v.id) || 0}</span>` : '';
+          return `<button type="button" class="acc-btn js-toggle-hist${open ? ' open' : ''}" data-vid="${v.id}" aria-expanded="${open}" title="掲載履歴を${open ? '閉じる' : '表示'}"><i class="bi bi-chevron-right"></i>${n}</button>`;
+        } },
       { key: 'code', label: '商品規格コード', sort: true, cls: 'nowrap', render: (v) => `<a href="#" class="js-mock">${esc(v.code)}</a>` + hitBadge(v) },
       { key: '_img', label: '画像', render: imgCell },
       { key: 'name', label: '商品規格名', sort: true, cls: 'col-name' },
@@ -239,42 +244,43 @@
       { key: 'stock', label: '在庫数', sort: true },
       { key: 'publish', label: '公開状態', render: (v) => pubGrid(v.publish) },
       { key: 'updatedAt', label: '更新日時', sort: true, cls: 'nowrap', render: (v) => fmtDate(v.updatedAt) },
-      { key: '_links', label: '紐づき', render: (v) => {
-          const label = state.histSearched ? `掲載履歴 ${state.linkCount.histories.get(v.id) || 0}件` : '掲載履歴を表示';
-          return `<div class="link-btns">${goProductBtn(v.productId)}<button type="button" class="btn btn-outline-primary js-goto" data-vid="${v.id}" data-goto="histories">${label}</button></div>`;
-        } },
-    ],
-    histories: [
-      { key: 'historyCode', label: '掲載履歴コード', sort: true, cls: 'nowrap', render: (h) => esc(h.historyCode) + hitBadge(h) },
-      { key: 'historyName', label: '掲載履歴名', sort: true, cls: 'col-name' },
-      { key: 'offerQty', label: '表示提供数', sort: true },
-      { key: 'postFrom', label: '掲載開始日時', sort: true, cls: 'nowrap', render: (h) => fmtDate(h.postFrom) },
-      { key: 'postTo', label: '掲載終了日時', sort: true, cls: 'nowrap', render: (h) => fmtDate(h.postTo) },
-      { key: 'saleFrom', label: '販売開始日時', sort: true, cls: 'nowrap', render: (h) => fmtDate(h.saleFrom) },
-      { key: 'saleTo', label: '販売終了日時', sort: true, cls: 'nowrap', render: (h) => fmtDate(h.saleTo) },
-      { key: 'prices', label: '販売価格', render: (h) => priceGrid(h.prices) },
-      { key: 'status', label: '公開状態', sort: true, render: (h) => statusBadge(h.status) },
-      { key: '_links', label: '紐づき', render: (h) => `<div class="link-btns"><button type="button" class="btn btn-outline-secondary js-goto" data-vid="${h.variantId}" data-goto="variants">商品規格を表示</button></div>` },
-      { key: '_actions', label: '', render: () => eyeBtn('掲載履歴') },
+      { key: '_links', label: '紐づき', render: (v) => `<div class="link-btns">${goProductBtn(v.productId)}</div>` },
     ],
   };
 
+  // 商品規格の下に開く掲載履歴（1対多）
+  const HIST_COLUMNS = [
+      { key: 'historyCode', label: '掲載履歴コード', cls: 'nowrap', render: (h) => `<a href="#" class="js-mock" data-msg="掲載履歴の詳細画面へ">${esc(h.historyCode)}</a>` },
+      { key: 'historyName', label: '掲載履歴名', cls: 'col-name' },
+      { key: 'offerQty', label: '表示提供数' },
+      { key: 'postFrom', label: '掲載開始日時', cls: 'nowrap', render: (h) => fmtDate(h.postFrom) },
+      { key: 'postTo', label: '掲載終了日時', cls: 'nowrap', render: (h) => fmtDate(h.postTo) },
+      { key: 'saleFrom', label: '販売開始日時', cls: 'nowrap', render: (h) => fmtDate(h.saleFrom) },
+      { key: 'saleTo', label: '販売終了日時', cls: 'nowrap', render: (h) => fmtDate(h.saleTo) },
+      { key: 'prices', label: '販売価格', render: (h) => priceGrid(h.prices) },
+      { key: 'status', label: '公開状態', render: (h) => statusBadge(h.status) },
+      { key: '_actions', label: '', render: () => eyeBtn('掲載履歴') },
+  ];
+
+  // 掲載履歴は開いたときに取得する（掲載履歴の条件で検索した場合は一致したものだけ）
+  function historiesOf(vid) {
+    const rows = state.histSearched ? state.results.histories.filter((h) => h.variantId === vid) : (histByVariant.get(vid) || []);
+    return [...rows].sort((a, b) => a.historyCode.localeCompare(b.historyCode, 'ja', { numeric: true }));
+  }
+  function nestedHistHtml(v, colspan) {
+    const rows = historiesOf(v.id);
+    const head = '<tr>' + HIST_COLUMNS.map((c) => `<th>${c.label}</th>`).join('') + '</tr>';
+    const body = rows.length
+      ? rows.map((h) => '<tr>' + HIST_COLUMNS.map((c) => `<td class="${c.cls || ''}">${c.render ? c.render(h) : esc(h[c.key])}</td>`).join('') + '</tr>').join('')
+      : `<tr><td colspan="${HIST_COLUMNS.length}" class="empty">掲載履歴はありません。</td></tr>`;
+    return `<tr class="hist-row"><td colspan="${colspan}"><div class="hist-nested">` +
+      `<div class="hist-nested-title"><i class="bi bi-clock-history"></i>掲載履歴 ${rows.length}件</div>` +
+      `<div class="table-wrap"><table class="table-x table-hist"><thead>${head}</thead><tbody>${body}</tbody></table></div></div></td></tr>`;
+  }
+
   function baseRows(tab) {
-    // 掲載履歴を検索していないときは、規格／商品で絞り込んだ分だけその場で取得する
-    if (tab === 'histories' && !state.histSearched) {
-      if (state.focusVariantId != null) return histByVariant.get(state.focusVariantId) || [];
-      if (state.focusProductId != null) return histByProduct.get(state.focusProductId) || [];
-      return [];
-    }
     let rows = state.results[tab];
-    if (state.focusVariantId != null) {
-      // 商品規格で絞り込み中：その規格と、紐づく商品・属性・掲載履歴だけ
-      const v = variantById.get(state.focusVariantId);
-      rows = rows.filter((r) => (tab === 'histories' ? r.variantId === v.id
-        : tab === 'variants' ? r.id === v.id
-        : tab === 'products' ? r.id === v.productId
-        : r.productId === v.productId));
-    } else if (state.focusProductId != null) {
+    if (state.focusProductId != null) {
       rows = rows.filter((r) => (tab === 'products' ? r.id : r.productId) === state.focusProductId);
     }
     return rows;
@@ -328,8 +334,14 @@
       return `<th class="sortable" data-sort="${c.key}">${c.label}<i class="bi ${ico} sort-ico${active ? ' active' : ''}"></i></th>`;
     }).join('') + '</tr>';
 
+    const rowHtml = (r) => {
+      const open = tab === 'variants' && state.expanded.has(r.id);
+      const cls = [showHit(r) ? 'row-hit' : '', open ? 'row-open' : ''].join(' ').trim();
+      return `<tr class="${cls}">` + cols.map((c) => `<td class="${c.cls || ''}">${c.render ? c.render(r) : esc(r[c.key])}</td>`).join('') + '</tr>' +
+        (open ? nestedHistHtml(r, cols.length) : '');
+    };
     const tbody = pageRows.length
-      ? pageRows.map((r) => `<tr class="${showHit(r) ? 'row-hit' : ''}">` + cols.map((c) => `<td class="${c.cls || ''}">${c.render ? c.render(r) : esc(r[c.key])}</td>`).join('') + '</tr>').join('')
+      ? pageRows.map(rowHtml).join('')
       : `<tr><td colspan="${cols.length}" class="empty">条件に一致する${TAB_LABEL[tab]}はありません。</td></tr>`;
 
     const info = total ? `全 ${total} 件中 ${start + 1}〜${Math.min(start + state.perPage, total)} 件を表示` : '0 件';
@@ -363,10 +375,6 @@
       const p = productById.get(state.focusProductId);
       bar.hidden = false;
       bar.innerHTML = `<i class="bi bi-funnel"></i> 商品 <strong>${esc(p.code)}</strong>「${esc(p.name)}」に紐づく情報だけを表示しています ${unfocusBtn}`;
-    } else if (state.focusVariantId != null) {
-      const v = variantById.get(state.focusVariantId);
-      bar.hidden = false;
-      bar.innerHTML = `<i class="bi bi-funnel"></i> 商品規格 <strong>${esc(v.code || '（コードなし）')}</strong>「${esc(v.name)}」に紐づく情報だけを表示しています ${unfocusBtn}`;
     } else {
       bar.hidden = true; bar.innerHTML = '';
     }
@@ -374,32 +382,21 @@
 
   function renderAll() { renderSummary(); TABS.forEach(renderTab); }
 
-  const histTabItem = () => document.getElementById('tab-item-histories');
-  const activeTab = () => ($('.result-tabs .nav-link.active') || {}).dataset?.tab;
   function showTab(tab) {
-    if (tab === 'histories') histTabItem().classList.remove('d-none');
     bootstrap.Tab.getOrCreateInstance($(`[data-tab="${tab}"].nav-link`)).show();
-  }
-  // 掲載履歴を検索しておらず、絞り込みもないときは掲載履歴タブを隠す
-  function syncHistTab() {
-    const show = state.histSearched || state.focusVariantId != null || (state.focusProductId != null && !histTabItem().classList.contains('d-none'));
-    if (show) { histTabItem().classList.remove('d-none'); return; }
-    if (activeTab() === 'histories') showTab('variants');
-    histTabItem().classList.add('d-none');
   }
 
   function doSearch() {
     state.cond = readConditions();
-    state.focusProductId = null; state.focusVariantId = null;
+    state.focusProductId = null;
+    state.expanded.clear();
     state.page = resetPages();
     runSearch();
-    histTabItem().classList.toggle('d-none', !state.histSearched);
     showTab('products');
     renderAll();
   }
 
-  function setFocus(pid) { state.focusProductId = pid; state.focusVariantId = null; state.page = resetPages(); syncHistTab(); renderAll(); }
-  function setFocusVariant(vid) { state.focusVariantId = vid; state.focusProductId = null; state.page = resetPages(); renderAll(); }
+  function setFocus(pid) { state.focusProductId = pid; state.page = resetPages(); renderAll(); }
 
   function toast(msg) { $('#toastBody').textContent = msg; bootstrap.Toast.getOrCreateInstance($('#toast'), { delay: 2200 }).show(); }
 
@@ -426,10 +423,13 @@
       if (focus) { e.preventDefault(); setFocus(Number(focus.dataset.pid)); return; }
 
       const go = e.target.closest('.js-goto');
-      if (go) {
-        if (go.dataset.pid) setFocus(Number(go.dataset.pid));
-        if (go.dataset.vid) setFocusVariant(Number(go.dataset.vid));
-        showTab(go.dataset.goto); return;
+      if (go) { setFocus(Number(go.dataset.pid)); showTab(go.dataset.goto); return; }
+
+      const acc = e.target.closest('.js-toggle-hist');
+      if (acc) {
+        const vid = Number(acc.dataset.vid);
+        if (state.expanded.has(vid)) state.expanded.delete(vid); else state.expanded.add(vid);
+        renderTab('variants'); return;
       }
 
       if (e.target.closest('.js-unfocus')) { setFocus(null); return; }

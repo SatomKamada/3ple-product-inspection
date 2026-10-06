@@ -123,8 +123,8 @@
                     <div class="check-panel" id="s-saleform" data-master-check="saleForms" role="group" aria-label="販売形態"></div>
                   </div>
                   <div class="col-sm-6">
-                    <label class="form-label" for="s-honten">本店公開状態</label>
-                    <select class="form-select" id="s-honten" data-master="hontenStatuses"></select>
+                    <span class="form-label d-block">本店公開状態</span>
+                    <div class="check-panel" id="s-honten" data-master-check="hontenStatuses" role="group" aria-label="本店公開状態"></div>
                   </div>
                   <div class="col-sm-6">
                     <span class="form-label d-block">規格区分</span>
@@ -193,18 +193,12 @@
               <i class="bi bi-grid-3x3-gap"></i>商品規格<span class="tab-count" id="count-variants">0</span>
             </button>
           </li>
-          <li class="nav-item d-none" id="tab-item-histories" role="presentation">
-            <button class="nav-link tab-btn-histories" data-bs-toggle="tab" data-bs-target="#pane-histories" data-tab="histories" type="button" role="tab">
-              <i class="bi bi-clock-history"></i>掲載履歴<span class="tab-count" id="count-histories">0</span>
-            </button>
-          </li>
         </ul>
 
         <div class="tab-content">
           <div class="tab-pane fade show active tab-products" id="pane-products" role="tabpanel" data-tab="products"></div>
           <div class="tab-pane fade tab-attributes" id="pane-attributes" role="tabpanel" data-tab="attributes"></div>
           <div class="tab-pane fade tab-variants" id="pane-variants" role="tabpanel" data-tab="variants"></div>
-          <div class="tab-pane fade tab-histories" id="pane-histories" role="tabpanel" data-tab="histories"></div>
         </div>
       </div>
     </section>
