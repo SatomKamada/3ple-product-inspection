@@ -251,7 +251,6 @@
   // 商品規格の下に開く掲載履歴（1対多）
   const HIST_COLUMNS = [
       { key: 'historyCode', label: '掲載履歴コード', cls: 'nowrap', render: (h) => `<a href="#" class="js-mock" data-msg="掲載履歴の詳細画面へ">${esc(h.historyCode)}</a>` },
-      { key: 'historyName', label: '掲載履歴名', cls: 'col-name' },
       { key: 'offerQty', label: '表示提供数' },
       { key: 'postFrom', label: '掲載開始日時', cls: 'nowrap', render: (h) => fmtDate(h.postFrom) },
       { key: 'postTo', label: '掲載終了日時', cls: 'nowrap', render: (h) => fmtDate(h.postTo) },
@@ -265,7 +264,7 @@
   // 掲載履歴は開いたときに取得する（掲載履歴の条件で検索した場合は一致したものだけ）
   function historiesOf(vid) {
     const rows = state.histSearched ? state.results.histories.filter((h) => h.variantId === vid) : (histByVariant.get(vid) || []);
-    return [...rows].sort((a, b) => a.historyCode.localeCompare(b.historyCode, 'ja', { numeric: true }));
+    return [...rows].sort((a, b) => b.postFrom - a.postFrom); // 上が新しく、下にいくほど古い
   }
   function nestedHistHtml(v, colspan) {
     const rows = historiesOf(v.id);

@@ -135,31 +135,41 @@
 
   const histories = [];
   let historySeq = 1;
+  // 1つの商品規格の中で、掲載期間・販売期間が重ならないよう新しい順に過去へさかのぼって作る。
+  // 公開しているのは最新の1件だけ。
   variants.forEach((v) => {
     const n = randInt(1, 3);
+    const periods = [];
+    let cursor = randDate(T_END - 90 * DAY, T_END - 5 * DAY); // 最新の掲載開始
     for (let k = 0; k < n; k++) {
-      const postedAt = randDate(T_2017, T_END);
+      const postFrom = Math.floor(cursor / 1000) * 1000;
+      const postTo = postFrom + randInt(7, 30) * DAY - 1000;
+      const saleFrom = postFrom + 1 * DAY;
+      const saleTo = Math.min(postTo, saleFrom + randInt(2, 14) * DAY);
+      periods.push({ postFrom, postTo, saleFrom, saleTo, isLatest: k === 0 });
+      cursor = postFrom - randInt(15, 120) * DAY; // 1つ前の掲載は十分前に開始（期間は重ならない）
+    }
+    periods.reverse().forEach((pd) => { // 古いものからコードを振る
       const prices = {};
       MASTER.historyShops.forEach(shop => { prices[shop] = randInt(10, 500) * 10; });
       histories.push({
         id: historySeq, variantId: v.id, productId: v.productId,
         historyCode: String(500000000 + historySeq),
-        historyName: v.productName + (rnd() < 0.4 ? '【キャンペーン】' : ''),
         offerQty: randInt(10, 1000),
-        postFrom: postedAt, postTo: postedAt + randInt(7, 30) * DAY,
-        saleFrom: postedAt + 1 * DAY, saleTo: postedAt + randInt(2, 14) * DAY,
+        postFrom: pd.postFrom, postTo: pd.postTo, saleFrom: pd.saleFrom, saleTo: pd.saleTo,
         prices: prices, businessType: pick(MASTER.businessTypes),
-        status: rnd() < 0.7 ? '公開' : '非公開', updatedAt: randDate(postedAt, T_END),
+        status: pd.isLatest ? '公開' : '非公開', updatedAt: randDate(pd.postFrom, T_END),
       });
       historySeq++;
-    }
+    });
   });
 
   // 商品属性情報（既存データの乱数系列を変えないよう別シードで生成）
   const rndA = mulberry32(20261005);
   const pickA = (arr) => arr[Math.floor(rndA() * arr.length)];
   const intA = (min, max) => min + Math.floor(rndA() * (max - min + 1));
-  const ORIGINS = ['日本（北海道）', '日本（青森県）', '日本（長野県）', '日本（静岡県）', '日本（香川県）', '日本（福岡県）', '日本', 'アメリカ', 'オーストラリア', '中国', 'タイ', 'イタリア'];
+  // 原産国のみ（産地は一旦入れない）。日本が多めに出るよう重複させている
+  const ORIGINS = ['日本', '日本', '日本', '日本', '日本', '日本', '日本', 'アメリカ', 'オーストラリア', '中国', 'タイ', 'イタリア'];
   const ORIGINS_NF = ['日本', '中国', 'ベトナム', 'タイ'];
   const INGREDIENTS = ['砂糖', '小豆', '小麦粉', '植物油脂', '食塩', '乳製品', '卵', 'でん粉', 'ぶどう糖果糖液糖', '香料', '酸味料', '寒天', 'カカオマス', 'りんご', '緑茶', '大豆', '米', 'かつお節エキス'];
   const INGREDIENTS_NF = ['パルプ', 'ポリウレタン', 'ポリエステル', '界面活性剤（アルキルエーテル硫酸エステルナトリウム）', '安定化剤', '香料'];
