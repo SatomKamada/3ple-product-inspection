@@ -366,7 +366,8 @@
       if (/(From|To)$/.test(d.key)) v = v.replace('T', ' ').replace(/-/g, '/');
       chips.push(`<span class="cond-chip">${scope}${esc(d.label)}：${esc(v)}</span>`);
     });
-    $('#condList').innerHTML = chips.length ? chips.join('') : '<span class="cond-chip">条件なし（全件）</span>';
+    $('#condList').innerHTML = chips.join('');
+    $('#condList').hidden = chips.length === 0;
 
     const bar = $('#focusBar');
     const unfocusBtn = '<button type="button" class="btn btn-sm btn-outline-primary ms-auto js-unfocus">絞り込みを解除</button>';
