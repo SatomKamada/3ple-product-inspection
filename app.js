@@ -204,7 +204,6 @@
       { key: 'maker', label: 'メーカー', cls: 'col-narrow' },
       { key: 'caseQty', label: 'ケース入数', sort: true },
       { key: 'ballQty', label: 'ボール入数', sort: true },
-      { key: 'pieceQty', label: 'ピース数', sort: true },
       { key: 'createdAt', label: '登録日時', sort: true, cls: 'nowrap', render: (p) => fmtDate(p.createdAt) },
       { key: 'updatedAt', label: '更新日時', sort: true, cls: 'nowrap', render: (p) => fmtDate(p.updatedAt) },
       { key: '_links', label: '紐づき', render: (p) => {
